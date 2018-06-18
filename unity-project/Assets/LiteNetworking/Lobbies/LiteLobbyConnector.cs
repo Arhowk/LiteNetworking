@@ -1,0 +1,307 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Networking;
+using LiteNetworkingGenerated;
+
+namespace LiteNetworking
+{
+
+    /*
+     * Defines the type of connection that you want the game to do
+     */
+    public enum NetworkingType
+    {
+        // All clients connect to one single host that manages all communications
+        DEDICATED_SERVER,
+
+        [Obsolete("Not implemented yet")]
+        P2P_NO_HOST,
+
+        [Obsolete("Not implemented yet")]
+        P2P_WEAK_HOST,
+
+        // One of the clients acts as a dedicated server as well as a player
+        P2P_DEDICATED_HOST
+    }
+    public class NetworkingConfig
+    {
+        public bool isServer = false;
+        public bool isMatchmaker = false;
+
+        public NetworkingType type = NetworkingType.DEDICATED_SERVER;
+
+        public string matchmakerServer = "localhost";
+        public int matchmakerPort = 8081;
+
+        public int simulatedLatency = 0;
+    }
+
+    public class LobbyInfo
+    {
+        public string name, host;
+        public int connectedClients, maxClients, port;
+        public bool isServer = false;
+        public string ip;
+    }
+
+    public class LobbySetupInfo
+    {
+
+
+    }
+
+    
+
+    public class LobbyConnector
+    {
+        private static LobbyInfo currentLobby;
+        public static int hostId, reliableChannelId, unreliableChannelId, connectedHost;
+        public static bool isServer = false;
+        private static bool isInitialized = false;
+        public static int connectionId;
+        private static int nextPlayerIndex = 1;
+        private static Dictionary<int, int> connectionToPlayer = new Dictionary<int, int>();
+
+        public static List<int> connectedClients = new List<int>();
+
+        static LobbyConnector()
+        {
+        }
+
+        public static void Init(NetworkingConfig cfg)
+        {
+            Debug.Log("Init!");
+            isInitialized = true;
+
+            ConnectionConfig config = new ConnectionConfig();
+            reliableChannelId = config.AddChannel(QosType.Reliable);
+            unreliableChannelId = config.AddChannel(QosType.Unreliable);
+
+            // An example of initializing the Transport Layer with custom settings
+            // GlobalConfig gConfig = new GlobalConfig();
+            //g//Config.MaxPacketSize = 9000;
+            NetworkTransport.Init();
+
+
+
+            if (isServer)
+            {
+               // int maxClients = 10;
+               // HostTopology topology = new HostTopology(config, maxClients);
+                //hostId = NetworkTransport.AddHost(topology, 8080);
+            }
+            else
+            {
+
+            }
+        }
+
+        
+
+        public static void HostLobby(LobbyInfo i)
+        {
+            ConnectionConfig config = new ConnectionConfig();
+            int myReliableChannelId = config.AddChannel(QosType.Reliable);
+            int myUnreliableChannelId = config.AddChannel(QosType.Unreliable);
+            HostTopology topology = new HostTopology(config, 10);
+            hostId = NetworkTransport.AddHost(topology, 8080);
+            isServer = true;
+            currentLobby = i;
+            if (!i.isServer)
+            {
+                // Connect the host
+                connectedClients.Add(0);
+                connectionToPlayer[0] = 0;
+
+                SpawnPlayerPrefab(true);
+            }
+
+        }
+
+        public static float GetPing(int playerId)
+        {
+            foreach(KeyValuePair<int,int> pID in connectionToPlayer)
+            {
+                if(playerId == pID.Value)
+                {
+                    byte err;
+                    return NetworkTransport.GetCurrentRTT(hostId, pID.Key, out err);
+                }
+            }
+            return -1;
+        }
+
+        public static void OnConnectSuccess()
+        {
+            // Spawn u
+            //SpawnPlayerPrefab(true);
+
+            // Spawn a prefab for the host!
+           // SpawnPlayerPrefab(false, 0);
+        }
+
+        public static void OnPlayerJoined(int connectionId)
+        {
+
+            NetworkManager.inst.StartCoroutine(SendPacketsLater(connectionId));
+        }
+
+        public static IEnumerator SendPacketsLater(int connectionId)
+        {
+            yield return new WaitForSeconds(1f);
+            Debug.Log("OnPlayerJoined");
+            //hostId = connectionId;
+
+            // Send the introduction packet to this client
+            Debug.Log("Sending out the intro packet");
+            LobbyHostIntroductionPacket introPkt = new LobbyHostIntroductionPacket();
+            connectedClients.Add(connectionId);
+            introPkt.myPlayerId = nextPlayerIndex++;
+            List<int> activePlayers = new List<int>();
+            foreach(int i in connectedClients)
+            {
+                if(i != connectionId)
+                    activePlayers.Add(connectionToPlayer[i]);
+            }
+            introPkt.activePlayerIds = activePlayers.ToArray();
+            LiteNetworkingGenerated.PacketSender.SendLobbyHostIntroductionPacket(introPkt, connectionId);
+
+            SpawnEntityPacket epkt = new SpawnEntityPacket();
+            foreach (NetworkedEntity e in EntityManager.ents.Values)
+            {
+                if(e.GetComponent<LitePlayer>() == null)
+                {
+                    epkt.authority = e.GetComponent<NetworkAuthority>().owner.id;
+                    epkt.entityId = (int) e.EntityIndex;
+                    epkt.prefabId = e.GetComponent<NetworkIdentity>().networkIdentity;
+                    epkt.position = e.transform.position;
+                    PacketSender.SendSpawnEntityPacket(epkt, connectionId);
+                }
+            }
+
+            connectionToPlayer[connectionId] = nextPlayerIndex-1;
+
+            SpawnPlayerPrefab(false, (nextPlayerIndex-1));
+
+            // Send the player joined packet to all other clients
+            foreach (int i in connectedClients)
+            {
+                if (i != connectionId)
+                {
+                    LobbyNewPlayerPacket pkt = new LobbyNewPlayerPacket();
+                    pkt.newPlayerId = (nextPlayerIndex-1);
+                    PacketSender.SendLobbyNewPlayerPacket(pkt, i);
+                }
+            }
+        }
+
+        private static void SpawnPlayerPrefab(bool isLocalPlayer, int playerId = 0)
+        {
+            // Create the game object
+            GameObject g = GameObject.Instantiate(NetworkManager.inst.playerPrefab);
+
+            // Install network agents
+            LitePlayer p = g.AddComponent<LitePlayer>();
+            Networking.players[playerId] = p;
+            p.id = playerId;
+            NetworkAuthority auth = g.AddComponent<NetworkAuthority>();
+
+            if (!auth)
+                auth = g.AddComponent<NetworkAuthority>();
+
+            auth.owner = p;
+            EntityManager.RegisterEntity(p.GetComponent<NetworkedEntity>(), playerId);
+
+            if (isLocalPlayer)
+            {
+                Networking.localPlayer = p;
+            }
+
+        }
+
+        public static void CancelConnection()
+        {
+            byte error = 0;
+            NetworkTransport.Disconnect(hostId, connectionId, out error);
+        }
+
+        public static void CreatePlayer(bool isLocalPlayer, int id)
+        {
+            SpawnPlayerPrefab(isLocalPlayer, id);
+        }
+
+        public static void Disconnect()
+        {
+            byte error;
+            NetworkTransport.Disconnect(hostId, connectionId, out error);
+
+            // Remove all players
+            foreach (NetworkedEntity e in EntityManager.ents.Values)
+            {
+                GameObject.Destroy(e.gameObject);
+            }
+            EntityManager.ents.Clear();
+
+            hostId = -1;
+            isServer = false;
+            currentLobby = null;
+            nextPlayerIndex = 1;
+
+            NetworkEvents.onDisconnect?.Invoke();
+            connectionToPlayer.Clear();
+        }
+
+        public static void OnPlayerDisconnect(int connectionId)
+        {
+            int playerId = connectionToPlayer[connectionId];
+            NetworkedEntity e = EntityManager.ents[playerId];
+            GameObject.Destroy(e.gameObject);
+            EntityManager.ents.Remove(playerId);
+
+            connectedClients.Remove(connectionId);
+        }
+
+
+        public static void ConnectToLobby(string lobbyIP)
+        {
+           /* if (Networking.IsBot())
+            {
+                // Fake a connection to itself
+                if (currentLobby == null)
+                {
+                    Debug.LogError("Attempt to connect a bot to a server that isnt hosting a lobby");
+                }
+            }*/
+            ConnectionConfig config = new ConnectionConfig();
+            int myReliableChannelId = config.AddChannel(QosType.Reliable);
+            int myUnreliableChannelId = config.AddChannel(QosType.Unreliable);
+            HostTopology topology = new HostTopology(config, 10);
+            /* int portCount = 1;
+            while(hostId == -1 && portCount < 50)
+            {
+                hostId = NetworkTransport.AddHost(topology, 8080 + (portCount++));
+            }*/
+            hostId = NetworkTransport.AddHost(topology, 0);
+            byte error;
+            connectionId = NetworkTransport.Connect(hostId, "127.0.0.1", 8080, 0, out error);
+            Debug.Log("My connection  id is " + connectionId);
+            if ((NetworkError)error != NetworkError.Ok)
+            {
+                //Output this message in the console with the Network Error
+                Debug.Log("There was this error : " + (NetworkError)error);
+            }
+            else
+            {
+                Debug.Log("Success???");    
+            }
+        }   
+
+        private static void OnPlayerConnectionEstablished()
+        {
+
+        }
+    }
+
+}
