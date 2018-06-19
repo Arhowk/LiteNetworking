@@ -11,15 +11,23 @@ public class NetworkManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        inst = this;
-	    if(useDebugUI)
+        if(inst)
         {
-            gameObject.AddComponent<DebugLobbyConnector>();
+            Destroy(gameObject);
         }
-
-        foreach(GameObject g in temporaryEntityPrefabs)
+        else
         {
-            g.GetComponent<NetworkIdentity>().OnStartClient();
+            DontDestroyOnLoad(gameObject);
+            inst = this;
+            if (useDebugUI)
+            {
+                gameObject.AddComponent<DebugLobbyConnector>();
+            }
+
+            foreach (GameObject g in temporaryEntityPrefabs)
+            {
+                g.GetComponent<NetworkIdentity>().OnStartClient();
+            }
         }
 	}
 	

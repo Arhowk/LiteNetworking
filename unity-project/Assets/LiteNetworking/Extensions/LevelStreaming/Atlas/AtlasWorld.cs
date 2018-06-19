@@ -2,15 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AtlasWorld : MonoBehaviour {
+public class AtlasWorld  {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public int sceneId;
+    public List<WorldLinkData> links;
+    public int width, height;
 }

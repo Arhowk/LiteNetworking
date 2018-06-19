@@ -24,14 +24,26 @@ namespace LiteNetworking
             pkt.entityId = (int)EntityIndex;
             pkt.position = transform.position;
             pkt.prefabId = GetComponent<NetworkIdentity>().networkIdentity;
-            PacketSender.SendSpawnEntityPacket(pkt);
+
+            if(WorldAtlas.enabled)
+            {
+                this.loadedChunkId = owner.GetChunkId();
+
+                foreach(LitePlayer player in Networking.players.Values)
+                {
+                    if(player.GetChunkId() == loadedChunkId)
+                    {
+                        PacketSender.SendSpawnEntityPacket(pkt, player.GetConnectionId());
+                    }
+                }
+            }
+            else
+            {
+                PacketSender.SendSpawnEntityPacket(pkt);
+            }
+
         }
 
-        [Obsolete]
-        public IEnumerator BroadcastToClients()
-        {
-            yield return new WaitForEndOfFrame();
-        }
 
         public void SetEntityIndex(int index, bool registerEntity = true)
         {

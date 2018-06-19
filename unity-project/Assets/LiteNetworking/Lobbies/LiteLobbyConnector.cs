@@ -120,6 +120,22 @@ namespace LiteNetworking
 
         }
 
+        public static int ConvertPlayerToConnection(LitePlayer p)
+        {
+            int id = p.id;
+
+
+            foreach (KeyValuePair<int, int> pID in connectionToPlayer)
+            {
+                if (id == pID.Value)
+                {
+                    return pID.Key;
+                }
+            }
+
+            return -1;
+        }
+
         public static float GetPing(int playerId)
         {
             foreach(KeyValuePair<int,int> pID in connectionToPlayer)

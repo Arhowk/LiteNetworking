@@ -52,6 +52,13 @@ namespace LiteNetworking
         public static Dictionary<System.Type, object> dataSerializers;
         public static LitePlayer localPlayer;
         public static Dictionary<int, LitePlayer> players = new Dictionary<int, LitePlayer>();
+        public static bool isServer
+        {
+            get
+            {
+                return LobbyConnector.isServer;
+            }
+        }
 
         static Networking()
         {

@@ -73,7 +73,7 @@ public class DebugLobbyConnector : MonoBehaviour {
                 LobbyInfo thisLobby = new LobbyInfo();
                 thisLobby.ip = "localhost";
                 thisLobby.port = 8080;
-                thisLobby.isServer = false;
+                thisLobby.isServer = true   ;
                 LobbyConnector.HostLobby(thisLobby);
             }
 

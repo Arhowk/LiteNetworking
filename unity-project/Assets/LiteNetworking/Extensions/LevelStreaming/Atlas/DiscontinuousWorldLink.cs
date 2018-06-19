@@ -7,6 +7,7 @@ public class DiscontinuousWorldLink : WorldLink
     public string thisLinkName;
     public int targetSceneId;
     public string targetLinkName;
+    public bool isInstanced;
     
     public void Activate()
     {
