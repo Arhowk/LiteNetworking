@@ -2,6 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Client --> Server when he is entering a new area
+public class RequestChunkPacket : LiteNetworking.LitePacket
+{
+    public int sceneId;
+
+    public override void Execute()
+    {
+        
+    }
+}
+
+// Client --> Server when he fully enters a new area
+public class OnSceneChangedPacket : LiteNetworking.LitePacket
+{
+    
+}
+
+
 public class ChunkHandler : MonoBehaviour {
 
     public float gridWidth = 10f;
@@ -13,6 +31,7 @@ public class ChunkHandler : MonoBehaviour {
 
     public static ChunkHandler i;
     public WorldChunk[][] allChunks;
+    public WorldChunk waitingChunk;
 
 	// Use this for initialization
 	void Start () {
@@ -41,16 +60,38 @@ public class ChunkHandler : MonoBehaviour {
 
     }
 
+    public void RegisterScene(WorldAtlasSceneAnchor anchor)
+    {
+        if(waitingChunk == null)
+        {
+            Debug.LogError("Attempt to register a scene with no waiting chunk");
+        }
+        else
+        {
+            waitingChunk.anchor = anchor;
+            waitingChunk.callback(waitingChunk);
+            waitingChunk = null;
+        }
+    }
+
     public int FindChunk(int width, int height)
     {
         for(int i = 0; i < numRows; i++)
         {
             for(int j = 0; j < numColumns; j++)
             {
-                if(allChunks[j][i] == null)
+
+                // Check the chunk from ij to i+w,j+h
+                for(int w = 0; w < width; w++)
                 {
-                    return j + i * numColumns;
+                    for(int h = 0; h < height; h++)
+                    {
+                        if (allChunks[j+w][i+h] != null) goto exitLoop;
+                    }
                 }
+
+                return j + i * numColumns;  
+                exitLoop: continue;
             }
         }
 
@@ -58,7 +99,7 @@ public class ChunkHandler : MonoBehaviour {
         return -1;  
     }
 
-    public void RequestChunk(int sceneId, System.Action callback)
+    public KeyValuePair<int,int> RequestChunk(int sceneId, System.Action<WorldChunk> callback)
     {
         // Try get chunk size
         AtlasWorld world = WorldAtlas.current.GetWorld(sceneId); //this naming convention is awful
@@ -67,11 +108,34 @@ public class ChunkHandler : MonoBehaviour {
         {
             int width = world.width, height = world.height;
             int chunk = FindChunk(width, height);
-             
+            int chunkX = chunk % numColumns;
+            int chunkY = chunk / numColumns;
+            WorldChunk chunkObj = new WorldChunk()
+            {
+                x = chunkX,
+                y = chunkY,
+                width = width,
+                height = height,
+                chunkSceneId = sceneId
+            };
+
+
+            for (int w = 0; w < width; w++)
+            {
+                for(int h = 0; h < height; h++)
+                {
+                    allChunks[w + chunkX][h + chunkY] = chunkObj;
+                }
+            }
+
+            waitingChunk = chunkObj;
+
+            return new KeyValuePair<int, int>(chunkX, chunkY);
         }
         else
         {
             Debug.LogError("Scene " + sceneId + " has no attached AtlasWorld");
+            return new KeyValuePair<int, int>(-1,-1);
         }
     }
 }

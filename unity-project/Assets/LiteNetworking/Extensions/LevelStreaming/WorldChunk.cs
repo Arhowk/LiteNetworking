@@ -7,6 +7,9 @@ public class WorldChunk  {
     public int chunkSceneId;
     public int x, y;
     public int width, height;
+    public GameObject root;
+    public WorldAtlasSceneAnchor anchor;
+    public System.Action<WorldChunk> callback;
 
     public List<LitePlayer> connectedPlayers;
     public List<LiteNetworking.NetworkedEntity> connectedEntities;

@@ -5,8 +5,8 @@ using UnityEngine;
 public class WorldAtlasSceneAnchor : MonoBehaviour {
 
     // Use this for initialization
-    private void Awake()
+    private void Start()
     {
-        WorldAtlas.current.RegisterScene(this);
+        ChunkHandler.i.RegisterScene(this);
     }
 }

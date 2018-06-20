@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 public class WorldAtlas : MonoBehaviour {
@@ -11,12 +12,18 @@ public class WorldAtlas : MonoBehaviour {
     public static WorldAtlas current;
     public Dictionary<int, AtlasWorld> worlds;
     public int lastChunkId = 0;
+    public static List<IAtlasSceneListener> listeners = new List<IAtlasSceneListener>();
 
 	// Use this for initialization
 	void Start () {
         current = this;
 
 	}
+
+    public static void RegisterSceneListener(IAtlasSceneListener listener)
+    {
+        listeners.Add(listener);
+    }
 
     public void GenerateDebugData()
     {
@@ -99,7 +106,9 @@ public class WorldAtlas : MonoBehaviour {
     {
         if(Networking.isServer)
         {
+            // Assign this world to the currently loading chunk
 
+            // 
         }
     }
 
@@ -110,6 +119,17 @@ public class WorldAtlas : MonoBehaviour {
 
     public void GoToScene(int sceneId, string offmeshLinkName)
     {
-        SceneManager.LoadScene(sceneId);
+        /* listeners.ForEach(a => a.OnSceneJobStart(sceneId));
+         SceneManager.LoadScene(sceneId);*/
+
+        listeners.ForEach(a => a.OnSceneJobStart(sceneId));
+
+        // Request the scene from the server
+
+        KeyValuePair<int,int> xy = ChunkHandler.i.RequestChunk(sceneId, (chunk) =>
+        {
+            GameObject chunkRoot = chunk.root; // Wow.
+        });
     }
+
 }
