@@ -213,10 +213,11 @@ namespace LiteNetworking
             }
         }
 
-        private static void SpawnPlayerPrefab(bool isLocalPlayer, int playerId = 0)
+        private static void SpawnPlayerPrefab(bool isLocalPlayer, int playerId = 0, Vector3 position = new Vector3())
         {
             // Create the game object
             GameObject g = GameObject.Instantiate(NetworkManager.inst.playerPrefab);
+            g.transform.position = position;
 
             // Install network agents
             LitePlayer p = g.AddComponent<LitePlayer>();
@@ -243,9 +244,9 @@ namespace LiteNetworking
             NetworkTransport.Disconnect(hostId, connectionId, out error);
         }
 
-        public static void CreatePlayer(bool isLocalPlayer, int id)
+        public static void CreatePlayer(bool isLocalPlayer, int id, Vector3 position = new Vector3())
         {
-            SpawnPlayerPrefab(isLocalPlayer, id);
+            SpawnPlayerPrefab(isLocalPlayer, id, position);
         }
 
         public static void Disconnect()

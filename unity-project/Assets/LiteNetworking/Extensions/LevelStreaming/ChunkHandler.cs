@@ -16,7 +16,28 @@ public class RequestChunkPacket : LiteNetworking.LitePacket
 // Client --> Server when he fully enters a new area
 public class OnSceneChangedPacket : LiteNetworking.LitePacket
 {
-    
+    public int sceneId;
+    public string offmeshLinkName;
+
+    public override void Execute()
+    {
+       
+    }
+}
+
+public class OnSceneChangedClient : LiteNetworking.LitePacket
+{
+    public int[] playersInScene;
+    public Vector3[] playerPositions;
+
+    public override void Execute()
+    {
+        // Make new players
+        for(int i = 0; i < playersInScene.Length; i++)
+        {
+            LiteNetworking.LobbyConnector.CreatePlayer(false, i, playerPositions[i]);
+        }
+    }
 }
 
 
@@ -32,6 +53,7 @@ public class ChunkHandler : MonoBehaviour {
     public static ChunkHandler i;
     public WorldChunk[][] allChunks;
     public WorldChunk waitingChunk;
+    public Dictionary<int, List<WorldChunk>> chunkRefs;
 
 	// Use this for initialization
 	void Start () {
@@ -69,7 +91,7 @@ public class ChunkHandler : MonoBehaviour {
         else
         {
             waitingChunk.anchor = anchor;
-            waitingChunk.callback(waitingChunk);
+           // waitingChunk.callback(waitingChunk);
             waitingChunk = null;
         }
     }
@@ -99,6 +121,22 @@ public class ChunkHandler : MonoBehaviour {
         return -1;  
     }
 
+    public WorldChunk GetChunkForPlayer(LitePlayer player, int sceneId)
+    {
+        foreach(WorldChunk chk in chunkRefs[sceneId])
+        {
+            foreach(LitePlayer plyr in chk.connectedPlayers)
+            {
+                if (plyr.id == player.id)
+                {
+                    return chk;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public KeyValuePair<int,int> RequestChunk(int sceneId, System.Action<WorldChunk> callback)
     {
         // Try get chunk size
@@ -116,7 +154,8 @@ public class ChunkHandler : MonoBehaviour {
                 y = chunkY,
                 width = width,
                 height = height,
-                chunkSceneId = sceneId
+                chunkSceneId = sceneId,
+                world = world
             };
 
 
@@ -128,7 +167,10 @@ public class ChunkHandler : MonoBehaviour {
                 }
             }
 
+            callback(chunkObj);
             waitingChunk = chunkObj;
+
+            ServerSceneLoader.LoadScene(sceneId);
 
             return new KeyValuePair<int, int>(chunkX, chunkY);
         }
@@ -136,6 +178,29 @@ public class ChunkHandler : MonoBehaviour {
         {
             Debug.LogError("Scene " + sceneId + " has no attached AtlasWorld");
             return new KeyValuePair<int, int>(-1,-1);
+        }
+    }
+
+    public void TryAddPlayerToScene(LitePlayer p, int sceneId)
+    {
+        AtlasWorld world = WorldAtlas.current.GetWorld(sceneId); //this naming convention is awful
+
+        if(world.instanced)
+        {
+            // {Todo}
+        }
+        else
+        {
+            List<WorldChunk> chunks = chunkRefs[sceneId];
+
+            if(chunks == null)
+            {
+                RequestChunk(sceneId, (chunk) => chunk.connectedPlayers.Add(p));
+            }
+            else
+            {
+                chunks[0].connectedPlayers.Add(p);
+            }
         }
     }
 }

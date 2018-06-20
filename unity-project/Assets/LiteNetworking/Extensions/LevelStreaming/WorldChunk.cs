@@ -10,13 +10,9 @@ public class WorldChunk  {
     public GameObject root;
     public WorldAtlasSceneAnchor anchor;
     public System.Action<WorldChunk> callback;
+    public AtlasWorld world;
 
-    public List<LitePlayer> connectedPlayers;
-    public List<LiteNetworking.NetworkedEntity> connectedEntities;
+    public List<LitePlayer> connectedPlayers = new List<LitePlayer>();
+    public List<LiteNetworking.NetworkedEntity> connectedEntities = new List<LiteNetworking.NetworkedEntity>();
 
-
-    public static void LoadScene(int sceneId, string hook)
-    {
-            
-    }
 }

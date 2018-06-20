@@ -7,4 +7,5 @@ public class AtlasWorld  {
     public int sceneId;
     public List<WorldLinkData> links;
     public int width, height;
+    public bool instanced;
 }

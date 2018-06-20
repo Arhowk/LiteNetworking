@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using LiteNetworkingGenerated;
 
 public class WorldAtlas : MonoBehaviour {
 
@@ -76,6 +77,7 @@ public class WorldAtlas : MonoBehaviour {
             sceneId = 0,
             width = 1,
             height = 1,
+            instanced=false,
             links = new List<WorldLinkData>() { coreToTop, coreToLeft }
         };
 
@@ -84,6 +86,7 @@ public class WorldAtlas : MonoBehaviour {
             sceneId = 2,
             width = 1,
             height = 1,
+            instanced=true,
             links = new List<WorldLinkData>() { topToCore }
         };
 
@@ -92,6 +95,7 @@ public class WorldAtlas : MonoBehaviour {
             sceneId = 1,
             width = 1,
             height = 1,
+            instanced=false,
             links = new List<WorldLinkData>() { leftToCore }
         };
 
@@ -119,17 +123,63 @@ public class WorldAtlas : MonoBehaviour {
 
     public void GoToScene(int sceneId, string offmeshLinkName)
     {
-        /* listeners.ForEach(a => a.OnSceneJobStart(sceneId));
-         SceneManager.LoadScene(sceneId);*/
-
+        if(Networking.isServer)
+        {
+            Debug.LogError("Use MovePlayerToScene on the server to properly handle chunking");
+            return;
+        }
+        
+        // Start the client jobs
         listeners.ForEach(a => a.OnSceneJobStart(sceneId));
+        ClientSceneLoader.LoadScene(sceneId);
 
-        // Request the scene from the server
+        // Request the data from the server
+        OnSceneChangedPacket pkt = new OnSceneChangedPacket();
+        pkt.sceneId = sceneId;
+        pkt.offmeshLinkName = offmeshLinkName;
+        PacketSender.SendOnSceneChangedPacket(pkt);
+    }
 
-        KeyValuePair<int,int> xy = ChunkHandler.i.RequestChunk(sceneId, (chunk) =>
+    public void PrepareSceneForPlayer(LitePlayer player, int sceneId, WorldLink fromLink, System.Action callbackOnComplete)
+    {
+        if(!Networking.isServer)
+        {
+            Debug.LogError("Attempt to call server fn on client");
+            return;
+        }
+
+        KeyValuePair<int, int> xy = ChunkHandler.i.RequestChunk(sceneId, (chunk) =>
         {
             GameObject chunkRoot = chunk.root; // Wow.
         });
+    }
+
+    public void RemovePlayerFromScene(LitePlayer player, int sceneId)
+    {
+        if (!Networking.isServer)
+        {
+            Debug.LogError("Attempt to call server fn on client");
+            return;
+        }
+    }
+
+    public void MovePlayerToScene(LitePlayer player, int sceneId, WorldLink fromLink)
+    {
+        if (!Networking.isServer)
+        {
+            Debug.LogError("Attempt to call server fn on client");
+            return;
+        }
+
+        WorldChunk chunk = ChunkHandler.i.GetChunkForPlayer(player, sceneId);
+
+        if(chunk == null)
+        {
+            PrepareSceneForPlayer(player, sceneId, fromLink, () => 
+            {
+
+            });
+        }
     }
 
 }
