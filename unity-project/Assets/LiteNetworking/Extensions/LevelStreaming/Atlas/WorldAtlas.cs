@@ -140,7 +140,7 @@ public class WorldAtlas : MonoBehaviour {
         PacketSender.SendOnSceneChangedPacket(pkt);
     }
 
-    public void PrepareSceneForPlayer(LitePlayer player, int sceneId, WorldLink fromLink, System.Action callbackOnComplete)
+    public void PrepareSceneForPlayer(LitePlayer player, int sceneId, WorldLink fromLink, System.Action<WorldChunk> callbackOnComplete)
     {
         if(!Networking.isServer)
         {
@@ -148,10 +148,7 @@ public class WorldAtlas : MonoBehaviour {
             return;
         }
 
-        KeyValuePair<int, int> xy = ChunkHandler.i.RequestChunk(sceneId, (chunk) =>
-        {
-            GameObject chunkRoot = chunk.root; // Wow.
-        });
+        WorldChunk xy = ChunkHandler.i.RequestChunk(sceneId, callbackOnComplete);
     }
 
     public void RemovePlayerFromScene(LitePlayer player, int sceneId)
@@ -175,9 +172,26 @@ public class WorldAtlas : MonoBehaviour {
 
         if(chunk == null)
         {
-            PrepareSceneForPlayer(player, sceneId, fromLink, () => 
+            PrepareSceneForPlayer(player, sceneId, fromLink, chk => 
             {
+                // Send data about all the players and the connected entitits.
+                OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
 
+                // Network Players
+                List<LitePlayer> players = chunk.connectedPlayers;
+                clientUpdate.playerPositions = new Vector3[players.Count];
+                clientUpdate.playersInScene = new int[players.Count];
+
+                for(int i = 0; i < players.Count; i++)
+                {
+                    clientUpdate.playerPositions[i] = players[i].transform.position;
+                    clientUpdate.playersInScene[i] = players[i].id;
+                }
+
+
+                // Network entities
+                // [ todo ]
+                LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
             });
         }
     }

@@ -13,6 +13,10 @@ public class ClientSceneLoader : MonoBehaviour {
 
     public static void LoadScene(int sceneId, bool isAdditive = false)
     {
+        // Clear all players
+        LiteNetworking.EntityManager.DeleteAllEntities(true);
+
+        // Start loading the game
         i.StartCoroutine(LoadSceneAsync(sceneId, isAdditive));
         SceneManager.LoadScene(sceneId);
     }

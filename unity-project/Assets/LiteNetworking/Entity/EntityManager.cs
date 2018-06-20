@@ -18,12 +18,18 @@ namespace LiteNetworking
 
         public static void DeleteAllEntities()
         {
+            DeleteAllEntities(false);
+        }
+
+        public static void DeleteAllEntities(bool keepLocalPlayer)
+        {
+            LitePlayer localHero = keepLocalPlayer ? Networking.GetLocalPlayer() : null;
             foreach(KeyValuePair<int, NetworkedEntity> pairs in ents)
             {
-                GameObject.Destroy(pairs.Value);
-
+                if(pairs.Value != localHero) GameObject.Destroy(pairs.Value);
             }
             ents.Clear();
+            if (keepLocalPlayer) ents[localHero.id] = localHero;
         }
 
         public static uint RegisterEntity(NetworkedEntity e)

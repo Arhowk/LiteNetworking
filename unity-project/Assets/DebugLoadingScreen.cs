@@ -24,10 +24,14 @@ public class DebugLoadingScreen : MonoBehaviour, IAtlasSceneListener {
 
     }
 
+
     public void OnSceneJobFinished()
     {
 
     }
-		
-	
+
+    public void OnSceneWaitingForServer()
+    {
+
+    }
 }

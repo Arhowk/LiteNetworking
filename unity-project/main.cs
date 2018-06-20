@@ -127,17 +127,66 @@ namespace LiteNetworkingGenerated
         {
             byte[] sceneId = Data_serializers_const.ser_Int32.Serialize(pkt.sceneId);
             m.Write(sceneId, 0, sceneId.Length);
+            byte[] offmeshLinkName = Data_serializers_const.ser_String.Serialize(pkt.offmeshLinkName);
+            m.Write(offmeshLinkName, 0, offmeshLinkName.Length);
         }
         
         public void _Deserialize(OnSceneChangedPacket pkt, MemoryStream m)
         {
             pkt.sceneId = Data_serializers_const.ser_Int32.Deserialize(m);
+            pkt.offmeshLinkName = Data_serializers_const.ser_String.Deserialize(m);
         }
         
         public override void Fire(MemoryStream m)
         {
             this._Deserialize(ConstRefs.pkt_OnSceneChangedPacket, m);
             ConstRefs.pkt_OnSceneChangedPacket.Execute();
+        }
+    }
+    
+    public sealed class pkt_OnSceneChangedClient_autogen : LiteNetworking.M_LitePacketInternalMirror
+    {
+        
+        public void _Serialize(OnSceneChangedClient pkt, MemoryStream m)
+        {
+            m.WriteByte(((byte)(pkt.playersInScene.Length)));
+            int i_playersInScene = 0;
+            for (i_playersInScene = 0; (i_playersInScene < pkt.playersInScene.Length); i_playersInScene = (i_playersInScene + 1))
+            {
+                byte[] byteArr = Data_serializers_const.ser_Int32.Serialize(pkt.playersInScene[i_playersInScene]);
+                m.Write(byteArr, 0, byteArr.Length);
+            }
+            m.WriteByte(((byte)(pkt.playerPositions.Length)));
+            int i_playerPositions = 0;
+            for (i_playerPositions = 0; (i_playerPositions < pkt.playerPositions.Length); i_playerPositions = (i_playerPositions + 1))
+            {
+                byte[] byteArr = Data_serializers_const.ser_Vector3.Serialize(pkt.playerPositions[i_playerPositions]);
+                m.Write(byteArr, 0, byteArr.Length);
+            }
+        }
+        
+        public void _Deserialize(OnSceneChangedClient pkt, MemoryStream m)
+        {
+            int length_playersInScene = m.ReadByte();
+            pkt.playersInScene = new Int32[length_playersInScene];
+            int i_playersInScene = 0;
+            for (i_playersInScene = 0; (i_playersInScene < length_playersInScene); i_playersInScene = (i_playersInScene + 1))
+            {
+                pkt.playersInScene[i_playersInScene] = Data_serializers_const.ser_Int32.Deserialize(m);
+            }
+            int length_playerPositions = m.ReadByte();
+            pkt.playerPositions = new Vector3[length_playerPositions];
+            int i_playerPositions = 0;
+            for (i_playerPositions = 0; (i_playerPositions < length_playerPositions); i_playerPositions = (i_playerPositions + 1))
+            {
+                pkt.playerPositions[i_playerPositions] = Data_serializers_const.ser_Vector3.Deserialize(m);
+            }
+        }
+        
+        public override void Fire(MemoryStream m)
+        {
+            this._Deserialize(ConstRefs.pkt_OnSceneChangedClient, m);
+            ConstRefs.pkt_OnSceneChangedClient.Execute();
         }
     }
     
@@ -271,6 +320,10 @@ namespace LiteNetworkingGenerated
         
         public static pkt_OnSceneChangedPacket_autogen mirror_OnSceneChangedPacket = new pkt_OnSceneChangedPacket_autogen();
         
+        public static OnSceneChangedClient pkt_OnSceneChangedClient = new OnSceneChangedClient();
+        
+        public static pkt_OnSceneChangedClient_autogen mirror_OnSceneChangedClient = new pkt_OnSceneChangedClient_autogen();
+        
         public static LobbyHostIntroductionPacket pkt_LobbyHostIntroductionPacket = new LobbyHostIntroductionPacket();
         
         public static pkt_LobbyHostIntroductionPacket_autogen mirror_LobbyHostIntroductionPacket = new pkt_LobbyHostIntroductionPacket_autogen();
@@ -331,10 +384,18 @@ namespace LiteNetworkingGenerated
             Networking.TransmitPacket(m, connectionId);
         }
         
-        public static void SendLobbyHostIntroductionPacket(LobbyHostIntroductionPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
+        public static void SendOnSceneChangedClient(OnSceneChangedClient pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(5);
+            ConstRefs.mirror_OnSceneChangedClient._Serialize(pkt, m);
+            Networking.TransmitPacket(m, connectionId);
+        }
+        
+        public static void SendLobbyHostIntroductionPacket(LobbyHostIntroductionPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
+        {
+            MemoryStream m = new MemoryStream();
+            m.WriteByte(6);
             ConstRefs.mirror_LobbyHostIntroductionPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -342,7 +403,7 @@ namespace LiteNetworkingGenerated
         public static void SendLobbyNewPlayerPacket(LobbyNewPlayerPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(6);
+            m.WriteByte(7);
             ConstRefs.mirror_LobbyNewPlayerPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -350,7 +411,7 @@ namespace LiteNetworkingGenerated
         public static void SendLobbyGoodbyePacket(LobbyGoodbyePacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(7);
+            m.WriteByte(8);
             ConstRefs.mirror_LobbyGoodbyePacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -358,7 +419,7 @@ namespace LiteNetworkingGenerated
         public static void SendThirdPersonPeriodicUpdate(ThirdPersonPeriodicUpdate pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(8);
+            m.WriteByte(9);
             ConstRefs.mirror_ThirdPersonPeriodicUpdate._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -376,6 +437,7 @@ namespace LiteNetworkingGenerated
             mirrors.Add(ConstRefs.mirror_SyncTransformPacket);
             mirrors.Add(ConstRefs.mirror_RequestChunkPacket);
             mirrors.Add(ConstRefs.mirror_OnSceneChangedPacket);
+            mirrors.Add(ConstRefs.mirror_OnSceneChangedClient);
             mirrors.Add(ConstRefs.mirror_LobbyHostIntroductionPacket);
             mirrors.Add(ConstRefs.mirror_LobbyNewPlayerPacket);
             mirrors.Add(ConstRefs.mirror_LobbyGoodbyePacket);

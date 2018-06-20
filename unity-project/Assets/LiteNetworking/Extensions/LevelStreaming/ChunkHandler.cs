@@ -21,7 +21,7 @@ public class OnSceneChangedPacket : LiteNetworking.LitePacket
 
     public override void Execute()
     {
-       
+        WorldAtlas.current.MovePlayerToScene(GetExecutingClient(), sceneId, null);
     }
 }
 
@@ -32,6 +32,7 @@ public class OnSceneChangedClient : LiteNetworking.LitePacket
 
     public override void Execute()
     {
+
         // Make new players
         for(int i = 0; i < playersInScene.Length; i++)
         {
@@ -137,7 +138,7 @@ public class ChunkHandler : MonoBehaviour {
         return null;
     }
 
-    public KeyValuePair<int,int> RequestChunk(int sceneId, System.Action<WorldChunk> callback)
+    public WorldChunk RequestChunk(int sceneId, System.Action<WorldChunk> callback = null)
     {
         // Try get chunk size
         AtlasWorld world = WorldAtlas.current.GetWorld(sceneId); //this naming convention is awful
@@ -172,12 +173,12 @@ public class ChunkHandler : MonoBehaviour {
 
             ServerSceneLoader.LoadScene(sceneId);
 
-            return new KeyValuePair<int, int>(chunkX, chunkY);
+            return chunkObj;
         }
         else
         {
             Debug.LogError("Scene " + sceneId + " has no attached AtlasWorld");
-            return new KeyValuePair<int, int>(-1,-1);
+            return null;
         }
     }
 
@@ -195,7 +196,8 @@ public class ChunkHandler : MonoBehaviour {
 
             if(chunks == null)
             {
-                RequestChunk(sceneId, (chunk) => chunk.connectedPlayers.Add(p));
+                WorldChunk chunk = RequestChunk(sceneId);
+                chunk.connectedPlayers.Add(p);
             }
             else
             {
