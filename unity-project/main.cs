@@ -279,10 +279,13 @@ namespace LiteNetworkingGenerated
         
         public void _Serialize(LobbyGoodbyePacket pkt, MemoryStream m)
         {
+            byte[] playerId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.playerId);
+            m.Write(playerId, 0, playerId.Length);
         }
         
         public void _Deserialize(LobbyGoodbyePacket pkt, MemoryStream m)
         {
+            pkt.playerId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
         }
         
         public override void Fire(MemoryStream m)

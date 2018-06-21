@@ -296,15 +296,30 @@ namespace LiteNetworking
             NetworkEvents.onDisconnect?.Invoke();
             connectionToPlayer.Clear();
         }
-
+        
+        // Sorry this function is a bit weird
+        // It takes a connection ID on the server,
+        // a player ID on client
         public static void OnPlayerDisconnect(int connectionId)
         {
-            int playerId = connectionToPlayer[connectionId];
-            NetworkedEntity e = EntityManager.ents[playerId];
-            GameObject.Destroy(e.gameObject);
-            EntityManager.ents.Remove(playerId);
+            if(Networking.isServer)
+            {
+                int playerId = connectionToPlayer[connectionId];
+                NetworkedEntity e = EntityManager.ents[playerId];
+                GameObject.Destroy(e.gameObject);
+                EntityManager.ents.Remove(playerId);
 
-            connectedClients.Remove(connectionId);
+                connectedClients.Remove(connectionId);
+            }
+            else
+            {
+                int playerId = connectionId;
+                NetworkedEntity e = EntityManager.ents[playerId];
+                GameObject.Destroy(e.gameObject);
+                EntityManager.ents.Remove(playerId);
+
+                connectedClients.Remove(connectionId);
+            }
         }
 
 

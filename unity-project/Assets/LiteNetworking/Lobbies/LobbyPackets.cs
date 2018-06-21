@@ -39,7 +39,12 @@ public class LobbyNewPlayerPacket : LiteNetworking.LitePacket
 
 public class LobbyGoodbyePacket : LiteNetworking.LitePacket
 {
+    public int playerId;
 
+    public override void Execute()
+    {
+        LiteNetworking.LobbyConnector.OnPlayerDisconnect(playerId);
+    }
 }
 
 

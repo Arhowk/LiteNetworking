@@ -169,6 +169,23 @@ public class WorldAtlas : MonoBehaviour {
             return;
         }
 
+        // Remove player from old scene
+        WorldChunk oldChunk = ChunkHandler.i.GetChunk(player.GetChunkId());
+        oldChunk.connectedPlayers.Remove(player);
+
+        LobbyGoodbyePacket pkt = new LobbyGoodbyePacket
+        {
+            playerId = player.id
+        };
+
+        foreach (LitePlayer plyr in oldChunk.connectedPlayers)
+        {
+            PacketSender.SendLobbyGoodbyePacket(pkt, plyr.GetConnectionId());
+        }
+
+
+        // Add player to new scene
+
         WorldChunk chunk = ChunkHandler.i.GetChunkForPlayer(player, sceneId);
 
         if(chunk == null)
