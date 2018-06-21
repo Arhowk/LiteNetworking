@@ -8,7 +8,7 @@ public class ClientSceneLoader : MonoBehaviour {
     public bool waitingOnServer = false;
     public bool waitingOnClient = false;
 
-    public void Awake()
+    public void Start()
     {
         i = this;
     }
@@ -37,11 +37,13 @@ public class ClientSceneLoader : MonoBehaviour {
 
         if(i.waitingOnClient)
         {
+            Debug.Log("OnJobIsTOalFin!!!");
             i.waitingOnClient = false;
             WorldAtlas.listeners.ForEach(a => a.OnSceneJobFinished());
         }
         else
         {
+            Debug.Log("WaitingONServer!!!");
             i.waitingOnServer = true;
             WorldAtlas.listeners.ForEach(a => a.OnSceneWaitingForServer());
         }
@@ -49,6 +51,7 @@ public class ClientSceneLoader : MonoBehaviour {
 
     public static void OnServerSceneJobFinished()
     {
+        Debug.Log("OnServerJobFIn");
         if(i.waitingOnServer)
         {
             i.waitingOnServer = false;

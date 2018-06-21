@@ -101,6 +101,16 @@ public class ChunkHandler : MonoBehaviour {
         return new Vector3(gridWidth * chunk,0,0);
     }
 
+    public WorldChunk GetChunk(int chunk)
+    {
+        return allChunks[chunk % numColumns][chunk / numColumns];
+    }
+
+    public void OnPlayerLoad(LitePlayer player)
+    {
+        allChunks[0][0].connectedPlayers.Add(player);
+    }
+
     public void MakeChunkForDefaultScene(WorldAtlasSceneAnchor anch)
     {
         Debug.Log("MakeChunkForDefaultScene!!!");
@@ -246,6 +256,10 @@ public class ChunkHandler : MonoBehaviour {
     public void TryAddPlayerToScene(LitePlayer p, int sceneId)
     {
         AtlasWorld world = WorldAtlas.current.GetWorld(sceneId); //this naming convention is awful
+
+        // Remove player from his current chunk
+        WorldChunk currChunk = GetChunk(p.GetChunkId());
+        currChunk.connectedPlayers.Remove(p);
 
         if(world.instanced)
         {

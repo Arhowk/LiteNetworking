@@ -196,6 +196,28 @@ public class WorldAtlas : MonoBehaviour {
                 LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
             });
         }
+        else
+        {
+            // Send data about all the players and the connected entitits.
+            OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
+
+            // Network Players
+            List<LitePlayer> players = chunk.connectedPlayers;
+            clientUpdate.playerPositions = new Vector3[players.Count];
+            clientUpdate.playersInScene = new int[players.Count];
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                clientUpdate.playerPositions[i] = players[i].transform.position;
+                clientUpdate.playersInScene[i] = players[i].id;
+            }
+
+            player.SetChunkId(chunk.chunk);
+            // Network entities
+            // [ todo ]
+            Debug.Log("Sending scene changed packet to player " + player.id);
+            LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
+        }
     }
 
 }

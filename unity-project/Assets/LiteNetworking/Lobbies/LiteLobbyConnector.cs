@@ -233,7 +233,6 @@ namespace LiteNetworking
                     Debug.Log("Done Sending NP Packet");
                 }
             }
-
             Debug.Log("Done SendPacketsLater");
         }
 
@@ -261,6 +260,9 @@ namespace LiteNetworking
             }
 
             p.Init();
+
+            if(Networking.isServer)
+                ChunkHandler.i.OnPlayerLoad(p);
 
         }
 
