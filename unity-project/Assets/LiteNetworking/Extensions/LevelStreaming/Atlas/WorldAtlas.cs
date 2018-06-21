@@ -173,51 +173,51 @@ public class WorldAtlas : MonoBehaviour {
 
         if(chunk == null)
         {
-            PrepareSceneForPlayer(player, sceneId, fromLink, chk => 
+            PrepareSceneForPlayer(player, sceneId, fromLink, chk =>
             {
-                // Send data about all the players and the connected entitits.
-                OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
-
-                // Network Players
-                List<LitePlayer> players = chk.connectedPlayers;
-                clientUpdate.playerPositions = new Vector3[players.Count];
-                clientUpdate.playersInScene = new int[players.Count];
-
-                for(int i = 0; i < players.Count; i++)
-                {
-                    clientUpdate.playerPositions[i] = players[i].transform.position;
-                    clientUpdate.playersInScene[i] = players[i].id;
-                }
-
-                player.SetChunkId(chk.chunk);
-                // Network entities
-                // [ todo ]
-                Debug.Log("Sending scene changed packet to player " + player.id);
-                LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
+                ChunkReady(chk, player);
             });
         }
         else
         {
-            // Send data about all the players and the connected entitits.
-            OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
-
-            // Network Players
-            List<LitePlayer> players = chunk.connectedPlayers;
-            clientUpdate.playerPositions = new Vector3[players.Count];
-            clientUpdate.playersInScene = new int[players.Count];
-
-            for (int i = 0; i < players.Count; i++)
-            {
-                clientUpdate.playerPositions[i] = players[i].transform.position;
-                clientUpdate.playersInScene[i] = players[i].id;
-            }
-
-            player.SetChunkId(chunk.chunk);
-            // Network entities
-            // [ todo ]
-            Debug.Log("Sending scene changed packet to player " + player.id);
-            LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
+            ChunkReady(chunk, player);
         }
+    }
+
+    private void ChunkReady(WorldChunk chunk, LitePlayer player)
+    {
+
+        // Send data about all the players and the connected entitits.
+        OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
+
+        // Network Players
+        List<LitePlayer> players = chunk.connectedPlayers;
+        clientUpdate.playerPositions = new Vector3[players.Count];
+        clientUpdate.playersInScene = new int[players.Count];
+
+        for (int i = 0; i < players.Count; i++)
+        {
+            clientUpdate.playerPositions[i] = players[i].transform.position;
+            clientUpdate.playersInScene[i] = players[i].id;
+        }
+
+        player.SetChunkId(chunk.chunk);
+        // Network entities
+        // [ todo ]
+        Debug.Log("Sending scene changed packet to player " + player.id);
+        Debug.Log("Broadcasting over that tehr are indeed " + players.Count + " players in scene");
+        LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
+
+        // Broadcast to existing players that they are in
+        foreach(LitePlayer p in players)
+        {
+            LobbyNewPlayerPacket pkt = new LobbyNewPlayerPacket();
+            pkt.newPlayerId = player.id;
+            PacketSender.SendLobbyNewPlayerPacket(pkt, p.GetConnectionId());
+        }
+
+        // ADd this player to the connected entities
+        chunk.connectedPlayers.Add(player);
     }
 
 }

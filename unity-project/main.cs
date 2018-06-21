@@ -188,7 +188,7 @@ namespace LiteNetworkingGenerated
             int i_playerPositions = 0;
             for (i_playerPositions = 0; (i_playerPositions < pkt.playerPositions.Length); i_playerPositions = (i_playerPositions + 1))
             {
-                byte[] byteArr = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.playerPositions[i_playerPositions]);
+                byte[] byteArr = Data_serializers_const.ser_ChunkedVectorSerializer.Serialize(pkt.playerPositions[i_playerPositions]);
                 m.Write(byteArr, 0, byteArr.Length);
             }
         }
@@ -207,7 +207,7 @@ namespace LiteNetworkingGenerated
             int i_playerPositions = 0;
             for (i_playerPositions = 0; (i_playerPositions < length_playerPositions); i_playerPositions = (i_playerPositions + 1))
             {
-                pkt.playerPositions[i_playerPositions] = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
+                pkt.playerPositions[i_playerPositions] = Data_serializers_const.ser_ChunkedVectorSerializer.Deserialize(m);
             }
         }
         

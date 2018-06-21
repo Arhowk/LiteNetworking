@@ -124,7 +124,6 @@ namespace LiteNetworking
 
         public static LitePlayer ConvertConnectionToPlayer(int connectionId)
         {
-            Debug.Log("ConvertConnection" + connectionId);
             if (connectionToPlayer.ContainsKey(connectionId))
             {
 

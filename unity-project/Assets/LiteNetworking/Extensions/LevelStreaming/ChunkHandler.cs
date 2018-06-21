@@ -28,15 +28,18 @@ public class OnSceneChangedPacket : LiteNetworking.LitePacket
 public class OnSceneChangedClient : LiteNetworking.LitePacket
 {
     public int[] playersInScene;
+
+    [LevelStreaming.Position]
     public Vector3[] playerPositions;
 
     public override void Execute()
     {
         Debug.Log("OnSceneChangedClient");
         // Make new players
+        Debug.Log("The amount of players currently in the scene is " + playersInScene.Length);
         for(int i = 0; i < playersInScene.Length; i++)
         {
-            LiteNetworking.LobbyConnector.CreatePlayer(false, i, playerPositions[i]);
+            LiteNetworking.LobbyConnector.CreatePlayer(false, playersInScene[i], playerPositions[i]);
         }
         ClientSceneLoader.OnServerSceneJobFinished();
     }
@@ -183,11 +186,13 @@ public class ChunkHandler : MonoBehaviour {
     {
         if(!chunkRefs.ContainsKey(sceneId))
         {
+            Debug.Log("ChunkRefs doesnt have scene");
             return null;
         }
 
         foreach(WorldChunk chk in chunkRefs[sceneId])
         {
+            if (true) return chk;
             foreach(LitePlayer plyr in chk.connectedPlayers)
             {
                 if (plyr.id == player.id)
