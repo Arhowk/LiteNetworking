@@ -18,27 +18,55 @@ namespace LiteNetworkingGenerated
     using System.Runtime.InteropServices;
 
 
+    public class Data_serializers_const
+    {
+
+        public static M_liteIntSerializer ser_M_liteIntSerializer = new M_liteIntSerializer();
+
+        public static M_liteDoubleSerializer ser_M_liteDoubleSerializer = new M_liteDoubleSerializer();
+
+        public static M_liteBoolSerializer ser_M_liteBoolSerializer = new M_liteBoolSerializer();
+
+        public static M_liteFloatSerializer ser_M_liteFloatSerializer = new M_liteFloatSerializer();
+
+        public static M_liteCharSerializer ser_M_liteCharSerializer = new M_liteCharSerializer();
+
+        public static M_liteLongSerializer ser_M_liteLongSerializer = new M_liteLongSerializer();
+
+        public static M_liteArraySerializer ser_M_liteArraySerializer = new M_liteArraySerializer();
+
+        public static M_liteEntitySerializer ser_M_liteEntitySerializer = new M_liteEntitySerializer();
+
+        public static M_liteTransformSerializer ser_M_liteTransformSerializer = new M_liteTransformSerializer();
+
+        public static M_liteVector2Serializer ser_M_liteVector2Serializer = new M_liteVector2Serializer();
+
+        public static M_liteVector3Serializer ser_M_liteVector3Serializer = new M_liteVector3Serializer();
+
+        public static ChunkedVectorSerializer ser_ChunkedVectorSerializer = new ChunkedVectorSerializer();
+    }
+
     public sealed class pkt_SpawnEntityPacket_autogen : LiteNetworking.M_LitePacketInternalMirror
     {
 
         public void _Serialize(SpawnEntityPacket pkt, MemoryStream m)
         {
-            byte[] entityId = Data_serializers_const.ser_Int32.Serialize(pkt.entityId);
+            byte[] entityId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.entityId);
             m.Write(entityId, 0, entityId.Length);
-            byte[] prefabId = Data_serializers_const.ser_Int32.Serialize(pkt.prefabId);
+            byte[] prefabId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.prefabId);
             m.Write(prefabId, 0, prefabId.Length);
-            byte[] authority = Data_serializers_const.ser_Int32.Serialize(pkt.authority);
+            byte[] authority = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.authority);
             m.Write(authority, 0, authority.Length);
-            byte[] position = Data_serializers_const.ser_Vector3.Serialize(pkt.position);
+            byte[] position = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.position);
             m.Write(position, 0, position.Length);
         }
 
         public void _Deserialize(SpawnEntityPacket pkt, MemoryStream m)
         {
-            pkt.entityId = Data_serializers_const.ser_Int32.Deserialize(m);
-            pkt.prefabId = Data_serializers_const.ser_Int32.Deserialize(m);
-            pkt.authority = Data_serializers_const.ser_Int32.Deserialize(m);
-            pkt.position = Data_serializers_const.ser_Vector3.Deserialize(m);
+            pkt.entityId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
+            pkt.prefabId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
+            pkt.authority = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
+            pkt.position = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -53,13 +81,13 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(RemoveEntity pkt, MemoryStream m)
         {
-            byte[] entityId = Data_serializers_const.ser_Int32.Serialize(pkt.entityId);
+            byte[] entityId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.entityId);
             m.Write(entityId, 0, entityId.Length);
         }
 
         public void _Deserialize(RemoveEntity pkt, MemoryStream m)
         {
-            pkt.entityId = Data_serializers_const.ser_Int32.Deserialize(m);
+            pkt.entityId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -74,22 +102,22 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(SyncTransformPacket pkt, MemoryStream m)
         {
-            byte[] t = Data_serializers_const.ser_NetworkedEntity.Serialize(pkt.t);
+            byte[] t = Data_serializers_const.ser_M_liteEntitySerializer.Serialize(pkt.t);
             m.Write(t, 0, t.Length);
-            byte[] position = Data_serializers_const.ser_Vector3.Serialize(pkt.position);
+            byte[] position = Data_serializers_const.ser_ChunkedVectorSerializer.Serialize(pkt.position);
             m.Write(position, 0, position.Length);
-            byte[] euler = Data_serializers_const.ser_Vector3.Serialize(pkt.euler);
+            byte[] euler = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.euler);
             m.Write(euler, 0, euler.Length);
-            byte[] scale = Data_serializers_const.ser_Vector3.Serialize(pkt.scale);
+            byte[] scale = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.scale);
             m.Write(scale, 0, scale.Length);
         }
 
         public void _Deserialize(SyncTransformPacket pkt, MemoryStream m)
         {
-            pkt.t = Data_serializers_const.ser_NetworkedEntity.Deserialize(m);
-            pkt.position = Data_serializers_const.ser_Vector3.Deserialize(m);
-            pkt.euler = Data_serializers_const.ser_Vector3.Deserialize(m);
-            pkt.scale = Data_serializers_const.ser_Vector3.Deserialize(m);
+            pkt.t = Data_serializers_const.ser_M_liteEntitySerializer.Deserialize(m);
+            pkt.position = Data_serializers_const.ser_ChunkedVectorSerializer.Deserialize(m);
+            pkt.euler = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
+            pkt.scale = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -104,13 +132,13 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(RequestChunkPacket pkt, MemoryStream m)
         {
-            byte[] sceneId = Data_serializers_const.ser_Int32.Serialize(pkt.sceneId);
+            byte[] sceneId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.sceneId);
             m.Write(sceneId, 0, sceneId.Length);
         }
 
         public void _Deserialize(RequestChunkPacket pkt, MemoryStream m)
         {
-            pkt.sceneId = Data_serializers_const.ser_Int32.Deserialize(m);
+            pkt.sceneId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -125,16 +153,16 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(OnSceneChangedPacket pkt, MemoryStream m)
         {
-            byte[] sceneId = Data_serializers_const.ser_Int32.Serialize(pkt.sceneId);
+            byte[] sceneId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.sceneId);
             m.Write(sceneId, 0, sceneId.Length);
-            byte[] offmeshLinkName = Data_serializers_const.ser_String.Serialize(pkt.offmeshLinkName);
+            byte[] offmeshLinkName = Data_serializers_const.ser_M_liteArraySerializer.Serialize(pkt.offmeshLinkName);
             m.Write(offmeshLinkName, 0, offmeshLinkName.Length);
         }
 
         public void _Deserialize(OnSceneChangedPacket pkt, MemoryStream m)
         {
-            pkt.sceneId = Data_serializers_const.ser_Int32.Deserialize(m);
-            pkt.offmeshLinkName = Data_serializers_const.ser_String.Deserialize(m);
+            pkt.sceneId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
+            pkt.offmeshLinkName = Data_serializers_const.ser_M_liteArraySerializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -153,14 +181,14 @@ namespace LiteNetworkingGenerated
             int i_playersInScene = 0;
             for (i_playersInScene = 0; (i_playersInScene < pkt.playersInScene.Length); i_playersInScene = (i_playersInScene + 1))
             {
-                byte[] byteArr = Data_serializers_const.ser_Int32.Serialize(pkt.playersInScene[i_playersInScene]);
+                byte[] byteArr = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.playersInScene[i_playersInScene]);
                 m.Write(byteArr, 0, byteArr.Length);
             }
             m.WriteByte(((byte)(pkt.playerPositions.Length)));
             int i_playerPositions = 0;
             for (i_playerPositions = 0; (i_playerPositions < pkt.playerPositions.Length); i_playerPositions = (i_playerPositions + 1))
             {
-                byte[] byteArr = Data_serializers_const.ser_Vector3.Serialize(pkt.playerPositions[i_playerPositions]);
+                byte[] byteArr = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.playerPositions[i_playerPositions]);
                 m.Write(byteArr, 0, byteArr.Length);
             }
         }
@@ -172,14 +200,14 @@ namespace LiteNetworkingGenerated
             int i_playersInScene = 0;
             for (i_playersInScene = 0; (i_playersInScene < length_playersInScene); i_playersInScene = (i_playersInScene + 1))
             {
-                pkt.playersInScene[i_playersInScene] = Data_serializers_const.ser_Int32.Deserialize(m);
+                pkt.playersInScene[i_playersInScene] = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             }
             int length_playerPositions = m.ReadByte();
             pkt.playerPositions = new Vector3[length_playerPositions];
             int i_playerPositions = 0;
             for (i_playerPositions = 0; (i_playerPositions < length_playerPositions); i_playerPositions = (i_playerPositions + 1))
             {
-                pkt.playerPositions[i_playerPositions] = Data_serializers_const.ser_Vector3.Deserialize(m);
+                pkt.playerPositions[i_playerPositions] = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
             }
         }
 
@@ -195,26 +223,26 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(LobbyHostIntroductionPacket pkt, MemoryStream m)
         {
-            byte[] myPlayerId = Data_serializers_const.ser_Int32.Serialize(pkt.myPlayerId);
+            byte[] myPlayerId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.myPlayerId);
             m.Write(myPlayerId, 0, myPlayerId.Length);
             m.WriteByte(((byte)(pkt.activePlayerIds.Length)));
             int i_activePlayerIds = 0;
             for (i_activePlayerIds = 0; (i_activePlayerIds < pkt.activePlayerIds.Length); i_activePlayerIds = (i_activePlayerIds + 1))
             {
-                byte[] byteArr = Data_serializers_const.ser_Int32.Serialize(pkt.activePlayerIds[i_activePlayerIds]);
+                byte[] byteArr = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.activePlayerIds[i_activePlayerIds]);
                 m.Write(byteArr, 0, byteArr.Length);
             }
         }
 
         public void _Deserialize(LobbyHostIntroductionPacket pkt, MemoryStream m)
         {
-            pkt.myPlayerId = Data_serializers_const.ser_Int32.Deserialize(m);
+            pkt.myPlayerId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             int length_activePlayerIds = m.ReadByte();
             pkt.activePlayerIds = new Int32[length_activePlayerIds];
             int i_activePlayerIds = 0;
             for (i_activePlayerIds = 0; (i_activePlayerIds < length_activePlayerIds); i_activePlayerIds = (i_activePlayerIds + 1))
             {
-                pkt.activePlayerIds[i_activePlayerIds] = Data_serializers_const.ser_Int32.Deserialize(m);
+                pkt.activePlayerIds[i_activePlayerIds] = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             }
         }
 
@@ -230,13 +258,13 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(LobbyNewPlayerPacket pkt, MemoryStream m)
         {
-            byte[] newPlayerId = Data_serializers_const.ser_Int32.Serialize(pkt.newPlayerId);
+            byte[] newPlayerId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.newPlayerId);
             m.Write(newPlayerId, 0, newPlayerId.Length);
         }
 
         public void _Deserialize(LobbyNewPlayerPacket pkt, MemoryStream m)
         {
-            pkt.newPlayerId = Data_serializers_const.ser_Int32.Deserialize(m);
+            pkt.newPlayerId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -269,25 +297,25 @@ namespace LiteNetworkingGenerated
 
         public void _Serialize(ThirdPersonPeriodicUpdate pkt, MemoryStream m)
         {
-            byte[] thisEntity = Data_serializers_const.ser_NetworkedEntity.Serialize(pkt.thisEntity);
+            byte[] thisEntity = Data_serializers_const.ser_M_liteEntitySerializer.Serialize(pkt.thisEntity);
             m.Write(thisEntity, 0, thisEntity.Length);
-            byte[] m_Move = Data_serializers_const.ser_Vector3.Serialize(pkt.m_Move);
+            byte[] m_Move = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.m_Move);
             m.Write(m_Move, 0, m_Move.Length);
-            byte[] position = Data_serializers_const.ser_Vector3.Serialize(pkt.position);
+            byte[] position = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.position);
             m.Write(position, 0, position.Length);
-            byte[] crouch = Data_serializers_const.ser_Boolean.Serialize(pkt.crouch);
+            byte[] crouch = Data_serializers_const.ser_M_liteBoolSerializer.Serialize(pkt.crouch);
             m.Write(crouch, 0, crouch.Length);
-            byte[] m_Jump = Data_serializers_const.ser_Boolean.Serialize(pkt.m_Jump);
+            byte[] m_Jump = Data_serializers_const.ser_M_liteBoolSerializer.Serialize(pkt.m_Jump);
             m.Write(m_Jump, 0, m_Jump.Length);
         }
 
         public void _Deserialize(ThirdPersonPeriodicUpdate pkt, MemoryStream m)
         {
-            pkt.thisEntity = Data_serializers_const.ser_NetworkedEntity.Deserialize(m);
-            pkt.m_Move = Data_serializers_const.ser_Vector3.Deserialize(m);
-            pkt.position = Data_serializers_const.ser_Vector3.Deserialize(m);
-            pkt.crouch = Data_serializers_const.ser_Boolean.Deserialize(m);
-            pkt.m_Jump = Data_serializers_const.ser_Boolean.Deserialize(m);
+            pkt.thisEntity = Data_serializers_const.ser_M_liteEntitySerializer.Deserialize(m);
+            pkt.m_Move = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
+            pkt.position = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
+            pkt.crouch = Data_serializers_const.ser_M_liteBoolSerializer.Deserialize(m);
+            pkt.m_Jump = Data_serializers_const.ser_M_liteBoolSerializer.Deserialize(m);
         }
 
         public override void Fire(MemoryStream m)
@@ -348,6 +376,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(0);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_SpawnEntityPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -356,6 +385,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(1);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_RemoveEntity._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -364,6 +394,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(2);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_SyncTransformPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -372,6 +403,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(3);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_RequestChunkPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -380,6 +412,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(4);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_OnSceneChangedPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -388,6 +421,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(5);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_OnSceneChangedClient._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -396,6 +430,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(6);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_LobbyHostIntroductionPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -404,6 +439,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(7);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_LobbyNewPlayerPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -412,6 +448,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(8);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_LobbyGoodbyePacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }
@@ -420,6 +457,7 @@ namespace LiteNetworkingGenerated
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(9);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_ThirdPersonPeriodicUpdate._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
         }

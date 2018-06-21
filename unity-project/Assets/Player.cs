@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using LiteNetworking;
 
-public class Player : NetworkedEntity {
+public class Player : MonoBehaviour {
     public GameObject cubePrefab;
 	// Use this for initialization
 	void Start () {

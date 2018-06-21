@@ -15,7 +15,7 @@ public class ServerSceneLoader : MonoBehaviour
     public static void LoadScene(int sceneId)
     {
         i.StartCoroutine(LoadSceneAsync(sceneId));
-        SceneManager.LoadScene(sceneId);
+       // SceneManager.LoadScene(sceneId);
     }
 
     private static IEnumerator LoadSceneAsync(int sceneId)

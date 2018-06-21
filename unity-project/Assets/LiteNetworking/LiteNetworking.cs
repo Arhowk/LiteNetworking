@@ -8,15 +8,21 @@ using System.IO;
 using System.Text;
 using LiteNetworking;
 
+/*
+ *  Sorry this file is a mess. Was the first file in this project.
+ *  Getting refactored soon
+ */
+
 public class LiteLocalOnly : Attribute
 {
 
 }
 namespace LiteNetworking
 {
-
+    // Packet attiributes
     public class LitePacket
     {
+        public static int executingClient;
         public virtual void Execute() { }
         public virtual bool Verify() { return true; }
 
@@ -27,9 +33,12 @@ namespace LiteNetworking
 
         public LitePlayer GetExecutingClient()
         {
-            return null;
+            return Networking.GetPlayer(executingClient);
         }
     }
+
+    public class RecordTargetPlayer : System.Attribute
+    { }
 
     public abstract class M_LitePacketInternalMirror
     {
@@ -48,6 +57,7 @@ namespace LiteNetworking
 
     public class Networking
     {
+        public static LitePlayer localPacketPlayer;
         private static Dictionary<System.Type, PacketStructDefinition> structDefinitions;
         public static Dictionary<System.Type, object> dataSerializers;
         public static LitePlayer localPlayer;
@@ -118,7 +128,7 @@ namespace LiteNetworking
 
         public static void SetupSerializers()
         {
-            dataSerializers[typeof(System.Single)] = new M_liteFloatSerializer();
+            /*dataSerializers[typeof(System.Single)] = new M_liteFloatSerializer();
             dataSerializers[typeof(System.Int32)] = new M_liteIntSerializer();
             dataSerializers[typeof(System.Int64)] = new M_liteLongSerializer();
             dataSerializers[typeof(System.String)] = new M_liteStringSerializer();
@@ -127,7 +137,7 @@ namespace LiteNetworking
             dataSerializers[typeof(Vector2)] = new M_liteVector2Serializer();
             dataSerializers[typeof(Vector3)] = new M_liteVector3Serializer();
             dataSerializers[typeof(GameObject)] = new M_liteEntitySerializer();
-            dataSerializers[typeof(Transform)] = new M_liteTransformSerializer();
+            dataSerializers[typeof(Transform)] = new M_liteTransformSerializer();*/
         }
 
         /*
@@ -176,7 +186,7 @@ public abstract class LiteByteSerializer<T>
     public abstract byte[] Serialize(T t);
     public abstract T Deserialize(MemoryStream b);
 }
-
+/*
 public class Data_serializers_const
 {
     public static M_liteFloatSerializer ser_Single = new M_liteFloatSerializer();
@@ -189,9 +199,9 @@ public class Data_serializers_const
     public static M_liteVector3Serializer ser_Vector3 = new M_liteVector3Serializer();
     public static M_liteEntitySerializer ser_NetworkedEntity = new M_liteEntitySerializer();
     public static M_liteTransformSerializer ser_Transform = new M_liteTransformSerializer();
-}
+}*/
 
-
+/*
 public class M_liteStringSerializer : LiteByteSerializer<string>
 {
     public override byte[] Serialize(string f)
@@ -203,7 +213,7 @@ public class M_liteStringSerializer : LiteByteSerializer<string>
     {
         return "";
     }
-}
+}*/
 
 public class M_liteIntSerializer : LiteByteSerializer<int>
 {

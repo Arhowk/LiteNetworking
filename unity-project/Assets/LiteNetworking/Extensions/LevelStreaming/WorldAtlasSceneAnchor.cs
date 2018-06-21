@@ -7,6 +7,13 @@ public class WorldAtlasSceneAnchor : MonoBehaviour {
     // Use this for initialization
     private void Start()
     {
-        ChunkHandler.i.RegisterScene(this);
+        if(ChunkHandler.i == null)
+        {
+            ChunkHandler.waitingAnchor = this;
+        }
+        else
+        {
+            ChunkHandler.i.RegisterScene(this);
+        }
     }
 }

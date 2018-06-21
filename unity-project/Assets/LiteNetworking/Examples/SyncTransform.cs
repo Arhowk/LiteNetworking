@@ -7,9 +7,13 @@ using DigitalRuby.Tween;
 
 public class SyncTransformPacket : LitePacket {
 
+    [LevelStreaming.LocalEntity]
     public NetworkedEntity t;
 
-    public Vector3 position, euler, scale;
+    [LevelStreaming.Position]
+    public Vector3 position;
+    
+    public Vector3 euler, scale;
 
     public override void Execute()
     {

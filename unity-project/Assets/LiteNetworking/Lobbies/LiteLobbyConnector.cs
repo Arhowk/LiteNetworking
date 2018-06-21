@@ -62,7 +62,7 @@ namespace LiteNetworking
         private static bool isInitialized = false;
         public static int connectionId;
         private static int nextPlayerIndex = 1;
-        private static Dictionary<int, int> connectionToPlayer = new Dictionary<int, int>();
+        public static Dictionary<int, int> connectionToPlayer = new Dictionary<int, int>();
 
         public static List<int> connectedClients = new List<int>();
 
@@ -118,6 +118,23 @@ namespace LiteNetworking
                 SpawnPlayerPrefab(true);
             }
 
+            MonoBehaviour.Instantiate(Resources.Load("Server Entity", typeof(GameObject)) as GameObject);
+
+        }
+
+        public static LitePlayer ConvertConnectionToPlayer(int connectionId)
+        {
+            Debug.Log("ConvertConnection" + connectionId);
+            if (connectionToPlayer.ContainsKey(connectionId))
+            {
+
+                return Networking.GetPlayer(connectionToPlayer[connectionId]);
+            }
+            else
+            {
+                Debug.Log("The given connection id is null????");
+                return null;
+            }
         }
 
         public static int ConvertPlayerToConnection(LitePlayer p)
@@ -182,7 +199,6 @@ namespace LiteNetworking
                     activePlayers.Add(connectionToPlayer[i]);
             }
             introPkt.activePlayerIds = activePlayers.ToArray();
-            LiteNetworkingGenerated.PacketSender.SendLobbyHostIntroductionPacket(introPkt, connectionId);
 
             SpawnEntityPacket epkt = new SpawnEntityPacket();
             foreach (NetworkedEntity e in EntityManager.ents.Values)
@@ -199,8 +215,12 @@ namespace LiteNetworking
 
             connectionToPlayer[connectionId] = nextPlayerIndex-1;
 
+            Debug.Log("Spawining player prefab");
             SpawnPlayerPrefab(false, (nextPlayerIndex-1));
 
+            Debug.Log("Actually sending the packet now");
+            LiteNetworkingGenerated.PacketSender.SendLobbyHostIntroductionPacket(introPkt, connectionId);
+            Debug.Log("Done sending packet");
             // Send the player joined packet to all other clients
             foreach (int i in connectedClients)
             {
@@ -208,9 +228,13 @@ namespace LiteNetworking
                 {
                     LobbyNewPlayerPacket pkt = new LobbyNewPlayerPacket();
                     pkt.newPlayerId = (nextPlayerIndex-1);
+                    Debug.Log("Sending NP Packet");
                     PacketSender.SendLobbyNewPlayerPacket(pkt, i);
+                    Debug.Log("Done Sending NP Packet");
                 }
             }
+
+            Debug.Log("Done SendPacketsLater");
         }
 
         private static void SpawnPlayerPrefab(bool isLocalPlayer, int playerId = 0, Vector3 position = new Vector3())
@@ -235,6 +259,8 @@ namespace LiteNetworking
             {
                 Networking.localPlayer = p;
             }
+
+            p.Init();
 
         }
 

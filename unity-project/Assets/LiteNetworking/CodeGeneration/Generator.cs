@@ -21,11 +21,17 @@ namespace LiteNetworking
         private static CodeNamespace nmspc;
         private static int currentPacketId = 0;
 
+        private static Dictionary<Type, List<KeyValuePair<Type, Type>>> serializers;
+
 
         public static void Generate()
         {
             // Star the generator
             StartGenerator();
+
+            // Generate the data serializers
+            GenerateSerializers();
+
 
             // Make all of the packet mirror classes
             var subclasses = AppDomain.CurrentDomain.GetAssemblies()
@@ -46,6 +52,57 @@ namespace LiteNetworking
             WritePacketRetriever(subclasses);
 
             FinalizeGenerator();
+        }
+
+        private static string GetSerializerForType(FieldInfo field)
+        {
+            // This is a list of < the serializer to use, the attribute required to use (or null to always use it) >
+            Debug.Log("Lookup serializer for " + field.FieldType);
+            Type fieldType = field.FieldType ;
+            if(field.FieldType.IsArray)
+            {
+                fieldType = field.FieldType.GetElementType();
+            }
+            List<KeyValuePair<Type, Type>> types = serializers[fieldType];
+            
+            // Check every attribute on the field and see if one of the serializer's required attribute matches
+            foreach(Attribute ab in field.GetCustomAttributes())
+            {
+                Debug.LogWarning("HAS CUSTOM ATTR " + ab.GetType().Name);
+                for (int i = types.Count - 1; i >= 0; i--)
+                {
+                    if(types[i].Value == null || types[i].Value == ab.GetType())
+                    {
+                        // This field has the required attribute {value}, so we are going to use the serializer {key}
+                        return "ser_" + types[i].Key.Name;
+                    }
+                }
+            }
+            return "ser_" + types[0].Key.Name;
+        }
+
+        public static void GenerateSerializers()
+        {
+            // {data to serialize, class to serialize }
+            serializers = DataSerialization.GetAllSerializers();
+            Debug.Log("NumSerializers : " + serializers.Keys.Count);
+
+            CodeTypeDeclaration serializerClass = new CodeTypeDeclaration("Data_serializers_const") { IsClass = true, TypeAttributes = TypeAttributes.Public };
+
+            foreach (KeyValuePair<Type, List<KeyValuePair<Type,Type>>> maps in serializers)
+            {
+                foreach(KeyValuePair<Type,Type> serializer in maps.Value)
+                {
+                    Debug.Log(serializer.Key + " : " + serializer.Value);
+                    CodeMemberField var = new CodeMemberField(serializer.Key.Name, "ser_" + serializer.Key.Name);
+                    var.Attributes = MemberAttributes.Static | MemberAttributes.Public;
+                    var.InitExpression = new CodeObjectCreateExpression(serializer.Key.Name);
+
+                    serializerClass.Members.Add(var);
+                }
+            }
+
+            nmspc.Types.Add(serializerClass);
         }
 
         public static void WriteConstHeader(IEnumerable<Type> types)
@@ -108,6 +165,27 @@ namespace LiteNetworking
                         new CodePrimitiveExpression(currentPacketId)
                     )
                 );
+
+                // Record who is sending the player
+                // Networking.localPacketPlayer = LobbyConnector.ConvertConnectionToPlayer(connectionId)
+                if(Attribute.GetCustomAttribute(t, typeof(LiteNetworking.RecordTargetPlayer)) != null || true) // TODO: fix this attribute
+                {
+                    m.Statements.Add(
+                        new CodeAssignStatement(
+                            new CodeFieldReferenceExpression(
+                               new CodeTypeReferenceExpression(typeof(Networking)),
+                               "localPacketPlayer"
+                            ),
+
+                            new CodeMethodInvokeExpression
+                            (
+                                new CodeTypeReferenceExpression(typeof(LobbyConnector)),
+                                "ConvertConnectionToPlayer",
+                                new CodeVariableReferenceExpression("connectionId")
+                            )
+                        )   
+                    );
+                }
 
                 // Add the serialized data
                 m.Statements.Add(
@@ -296,7 +374,7 @@ namespace LiteNetworking
                                 "System.Byte[]",
                                  "byteArr",
                                  new CodeMethodInvokeExpression(
-                                     new CodeTypeReferenceExpression("Data_serializers_const.ser_" + subType.Name),
+                                     new CodeTypeReferenceExpression("Data_serializers_const." + GetSerializerForType(p)),
                                      // new CodeThisReferenceExpression(),
                                      "Serialize",
                                      new CodeExpression[]  {
@@ -364,7 +442,7 @@ namespace LiteNetworking
                     ("System.Byte[]",
                     p.Name,
                     new CodeMethodInvokeExpression(
-                        new CodeTypeReferenceExpression("Data_serializers_const.ser_" + p.FieldType.Name),
+                        new CodeTypeReferenceExpression("Data_serializers_const." + GetSerializerForType(p)),
                         // new CodeThisReferenceExpression(),
                         "Serialize",
                         new CodeExpression[]  {
@@ -460,7 +538,7 @@ namespace LiteNetworking
                                     new CodeVariableReferenceExpression(varName)
                                 ),
                                 new CodeMethodInvokeExpression(
-                                    new CodeTypeReferenceExpression("Data_serializers_const.ser_" + subType.Name),
+                                    new CodeTypeReferenceExpression("Data_serializers_const." + GetSerializerForType(p)),
                                     // new CodeThisReferenceExpression(),
                                     "Deserialize",
                                     new CodeExpression[]  {
@@ -493,7 +571,7 @@ namespace LiteNetworking
                     CodeAssignStatement assign = new CodeAssignStatement(
                         new CodeFieldReferenceExpression(new CodeArgumentReferenceExpression("pkt"), p.Name),
                         new CodeMethodInvokeExpression(
-                            new CodeTypeReferenceExpression("Data_serializers_const.ser_" + p.FieldType.Name),
+                            new CodeTypeReferenceExpression("Data_serializers_const." + GetSerializerForType(p)),
                             // new CodeThisReferenceExpression(),
                             "Deserialize",
                             new CodeExpression[]  {

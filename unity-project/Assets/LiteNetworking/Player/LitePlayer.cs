@@ -11,6 +11,14 @@ public partial class LitePlayer : NetworkedEntity {
         DontDestroyOnLoad(this);
     }
 
+    public void Init()
+    {
+        if (GetComponent<AudioListener>())
+        {
+            GetComponent<AudioListener>().enabled = Networking.GetLocalPlayer() == this;
+        }
+    }
+
     public bool IsBot()
     {
         return false;

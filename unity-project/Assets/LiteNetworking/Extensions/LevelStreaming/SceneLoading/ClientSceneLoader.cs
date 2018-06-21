@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class ClientSceneLoader : MonoBehaviour {
     public static ClientSceneLoader i;
+    public bool waitingOnServer = false;
+    public bool waitingOnClient = false;
 
     public void Awake()
     {
@@ -18,18 +20,43 @@ public class ClientSceneLoader : MonoBehaviour {
 
         // Start loading the game
         i.StartCoroutine(LoadSceneAsync(sceneId, isAdditive));
-        SceneManager.LoadScene(sceneId);
+        //SceneManager.LoadScene(sceneId);
     }
 
     private static IEnumerator LoadSceneAsync(int sceneId, bool isAdditive)
     {
         LoadSceneMode mode = isAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single;
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneId, mode);
-
+        Debug.Log("LoadSceneAsync");
         // Wait until the asynchronous scene fully loads
         while (!asyncLoad.isDone)
         {
-            yield return null;
+            yield return new WaitForSeconds(0.1f);
+            WorldAtlas.listeners.ForEach(a => a.OnSceneJobUpdate(asyncLoad.progress));
+        }
+
+        if(i.waitingOnClient)
+        {
+            i.waitingOnClient = false;
+            WorldAtlas.listeners.ForEach(a => a.OnSceneJobFinished());
+        }
+        else
+        {
+            i.waitingOnServer = true;
+            WorldAtlas.listeners.ForEach(a => a.OnSceneWaitingForServer());
         }
     }   
+
+    public static void OnServerSceneJobFinished()
+    {
+        if(i.waitingOnServer)
+        {
+            i.waitingOnServer = false;
+            WorldAtlas.listeners.ForEach(a => a.OnSceneJobFinished());
+        }
+        else
+        {
+            i.waitingOnClient = true;
+        }
+    }
 }

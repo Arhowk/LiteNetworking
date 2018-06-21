@@ -52,8 +52,9 @@ public class SocketListener
                                     SocketSender.SendPacket(new System.IO.MemoryStream(recBuffer, 0, recBuffer.Length, false, true), connection);
                                 }
                             }
+                            LitePacket.executingClient = LobbyConnector.connectionToPlayer[connectionId];
+                            Networking.localPacketPlayer = Networking.GetPlayer(LitePacket.executingClient);
                         }
-
                         LiteNetworkingGenerated.PacketReader.ReadPacket(new System.IO.MemoryStream(recBuffer, 0, recBuffer.Length, false, true));
                         break;
                     };

@@ -12,6 +12,15 @@ public class WorldChunk  {
     public System.Action<WorldChunk> callback;
     public AtlasWorld world;
 
+    public int chunk
+    {
+        get
+        {
+            return x; // TODO- 2D support
+        }
+    }
+    
+
     public List<LitePlayer> connectedPlayers = new List<LitePlayer>();
     public List<LiteNetworking.NetworkedEntity> connectedEntities = new List<LiteNetworking.NetworkedEntity>();
 

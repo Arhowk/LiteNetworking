@@ -16,6 +16,11 @@ namespace LiteNetworking
         {
             return p.GetChunkId() == GetChunkId();
         }
+
+        public void SetChunkId(int chkid)
+        {
+            loadedChunkId = chkid;
+        }
     }
 }
 

@@ -2,20 +2,41 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using LiteNetworking;
 
-//[Networking.CustomSerializer(typeof(Vector3))]
+[LiteNetworking.CustomSerializer(typeof(Vector3), typeof(LevelStreaming.Position))]
+[LiteNetworking.RecordTargetPlayer]
 public class ChunkedVectorSerializer : LiteByteSerializer<Vector3>
 {
+    public M_liteVector3Serializer defaultSerializer = new M_liteVector3Serializer();
     public override Vector3 Deserialize(MemoryStream b)
     {
-        //int playerChunk = Networking.localPacketPlayer.chunk;
+        if (Networking.isServer)
+        {
+            int playerChunk = LiteNetworking.Networking.localPacketPlayer.GetChunkId();
+            Vector3 offset = ChunkHandler.i.GetChunkOffset(playerChunk);
+            Debug.Log("DS Player offset is " + offset);
+            return defaultSerializer.Deserialize(b) + offset;
+        }
+        else
+        {
+            return defaultSerializer.Deserialize(b);
+        }
 
-        return Vector3.zero;
     }
 
     public override byte[] Serialize(Vector3 t)
     {
-
-        return new byte[0];
+        if (Networking.isServer)
+        {
+            int playerChunk = LiteNetworking.Networking.localPacketPlayer.GetChunkId();
+            Vector3 offset = ChunkHandler.i.GetChunkOffset(playerChunk);
+            Debug.Log("S Player offset is " + offset);
+            return defaultSerializer.Serialize(t - offset);
+        }
+        else
+        {
+            return defaultSerializer.Serialize(t);
+        }
     }
 }

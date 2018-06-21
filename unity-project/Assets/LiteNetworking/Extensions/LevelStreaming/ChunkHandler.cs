@@ -32,12 +32,13 @@ public class OnSceneChangedClient : LiteNetworking.LitePacket
 
     public override void Execute()
     {
-
+        Debug.Log("OnSceneChangedClient");
         // Make new players
         for(int i = 0; i < playersInScene.Length; i++)
         {
             LiteNetworking.LobbyConnector.CreatePlayer(false, i, playerPositions[i]);
         }
+        ClientSceneLoader.OnServerSceneJobFinished();
     }
 }
 
@@ -53,16 +54,19 @@ public class ChunkHandler : MonoBehaviour {
 
     public static ChunkHandler i;
     public WorldChunk[][] allChunks;
-    public WorldChunk waitingChunk;
+    public static WorldChunk waitingChunk;
+    public static WorldAtlasSceneAnchor waitingAnchor;
     public Dictionary<int, List<WorldChunk>> chunkRefs;
+   
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         i = this;
         numColumns = (int)(maxXYValue / gridWidth);
         numRows = (int)(maxXYValue / gridHeight);
 
         allChunks = new WorldChunk[numColumns][];
+        chunkRefs = new Dictionary<int, List<WorldChunk>>();
 
         startingChunkX = (numColumns / 2);
         startingChunkY = (numRows / 2); 
@@ -70,6 +74,15 @@ public class ChunkHandler : MonoBehaviour {
         for(int i = 0; i < numColumns; i++)
         {
             allChunks[i] = new WorldChunk[numRows];
+        }
+
+        if(waitingAnchor != null)
+        {
+            MakeChunkForDefaultScene(waitingAnchor);
+        }
+        else
+        {
+            Debug.Log("No waiting chunk!");
         }
 	}
 	
@@ -83,22 +96,56 @@ public class ChunkHandler : MonoBehaviour {
 
     }
 
+    public Vector3 GetChunkOffset(int chunk)
+    {
+        return new Vector3(gridWidth * chunk,0,0);
+    }
+
+    public void MakeChunkForDefaultScene(WorldAtlasSceneAnchor anch)
+    {
+        Debug.Log("MakeChunkForDefaultScene!!!");
+        WorldChunk chunk = new WorldChunk()
+        {
+            x = 0,
+            y = 0,
+            width = 1,
+            height = 1,
+            chunkSceneId = 0,
+            anchor = anch
+        };
+
+        allChunks[0][0] = chunk;
+        chunkRefs[0] = new List<WorldChunk>() { chunk };
+
+    }
+
     public void RegisterScene(WorldAtlasSceneAnchor anchor)
     {
+        Debug.Log("RegisterScene!");
         if(waitingChunk == null)
         {
-            Debug.LogError("Attempt to register a scene with no waiting chunk");
+            Debug.Log("Make Default!");
+            // Debug.LogError("Attempt to register a scene with no waiting chunk");
+            MakeChunkForDefaultScene(anchor);
         }
         else
         {
+            Debug.Log("Callback!");
+            int x = waitingChunk.x, y = waitingChunk.y;
+            float offsetX = x * gridWidth, offsetY = y * gridHeight;
+            Debug.Log("The chunk coords are " + x + " : " + y);
+
+            anchor.gameObject.transform.position = new Vector3(offsetX, 0, offsetY);
+
             waitingChunk.anchor = anchor;
-           // waitingChunk.callback(waitingChunk);
+            waitingChunk.callback(waitingChunk);
             waitingChunk = null;
         }
     }
 
     public int FindChunk(int width, int height)
     {
+        Debug.Log("Trying to find a chunk for size " + width + ":" + height);
         for(int i = 0; i < numRows; i++)
         {
             for(int j = 0; j < numColumns; j++)
@@ -112,7 +159,7 @@ public class ChunkHandler : MonoBehaviour {
                         if (allChunks[j+w][i+h] != null) goto exitLoop;
                     }
                 }
-
+                Debug.Log("Found a chunk at " + i + ":" + j);
                 return j + i * numColumns;  
                 exitLoop: continue;
             }
@@ -124,6 +171,11 @@ public class ChunkHandler : MonoBehaviour {
 
     public WorldChunk GetChunkForPlayer(LitePlayer player, int sceneId)
     {
+        if(!chunkRefs.ContainsKey(sceneId))
+        {
+            return null;
+        }
+
         foreach(WorldChunk chk in chunkRefs[sceneId])
         {
             foreach(LitePlayer plyr in chk.connectedPlayers)
@@ -159,6 +211,14 @@ public class ChunkHandler : MonoBehaviour {
                 world = world
             };
 
+            if(!chunkRefs.ContainsKey(sceneId))
+            {
+                chunkRefs[sceneId] = new List<WorldChunk>() { chunkObj };
+            }
+            else
+            {
+                chunkRefs[sceneId].Add(chunkObj);
+            }
 
             for (int w = 0; w < width; w++)
             {
@@ -168,8 +228,9 @@ public class ChunkHandler : MonoBehaviour {
                 }
             }
 
-            callback(chunkObj);
+           // callback(chunkObj);
             waitingChunk = chunkObj;
+            chunkObj.callback = callback;
 
             ServerSceneLoader.LoadScene(sceneId);
 

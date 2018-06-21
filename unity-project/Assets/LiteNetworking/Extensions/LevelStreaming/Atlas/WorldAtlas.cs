@@ -18,6 +18,7 @@ public class WorldAtlas : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         current = this;
+        GenerateDebugData();
 
 	}
 
@@ -178,7 +179,7 @@ public class WorldAtlas : MonoBehaviour {
                 OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
 
                 // Network Players
-                List<LitePlayer> players = chunk.connectedPlayers;
+                List<LitePlayer> players = chk.connectedPlayers;
                 clientUpdate.playerPositions = new Vector3[players.Count];
                 clientUpdate.playersInScene = new int[players.Count];
 
@@ -188,9 +189,10 @@ public class WorldAtlas : MonoBehaviour {
                     clientUpdate.playersInScene[i] = players[i].id;
                 }
 
-
+                player.SetChunkId(chk.chunk);
                 // Network entities
                 // [ todo ]
+                Debug.Log("Sending scene changed packet to player " + player.id);
                 LiteNetworkingGenerated.PacketSender.SendOnSceneChangedClient(clientUpdate, player.GetConnectionId());
             });
         }
