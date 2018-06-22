@@ -8,6 +8,9 @@ public class LobbyHostIntroductionPacket : LiteNetworking.LitePacket
     public int myPlayerId;
     public int[] activePlayerIds;
 
+    public long[] preplacedInstanceIds;
+    public int[] instanceIdToEntity;
+
     public override void Execute()
     {
         Debug.Log("I recieved my introduction packet!");

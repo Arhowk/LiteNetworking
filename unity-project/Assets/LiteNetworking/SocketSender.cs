@@ -9,6 +9,7 @@ public class SocketSender : MonoBehaviour {
     public static void SendPacket(MemoryStream m, int connectionId = -1)
     {
         if (!Networking.isConnected) return;
+
         byte error;
         if(LobbyConnector.isServer)
         {

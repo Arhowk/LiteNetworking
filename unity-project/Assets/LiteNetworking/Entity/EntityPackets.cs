@@ -22,3 +22,17 @@ public class RemoveEntity : LitePacket
         
     }
 }
+
+public class RegisterPreplacedEntity : LitePacket
+{
+    long instanceId;
+    int newEntityId;
+}
+
+public class UpdatePreplacedEntity : LitePacket
+{
+    long instanceId;
+    int newEntityId;
+}
+
+

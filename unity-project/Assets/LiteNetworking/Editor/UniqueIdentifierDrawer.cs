@@ -19,7 +19,7 @@ public class UniqueIdDrawer : PropertyDrawer
         if (hasVerifiedId == false)
         {
             if (!StaticIDManager.RegisterID(prop.longValue, prop.serializedObject.targetObject as UniqueId))
-            {
+            {   
                 long guid = UnityEngine.Random.Range(0, System.Int32.MaxValue) + (((long)UnityEngine.Random.Range(0, System.Int32.MaxValue)) << 32);
                 prop.longValue = guid;
             }
