@@ -13,6 +13,11 @@ namespace LiteNetworking
         [SerializeField]
         public uint EntityIndex;
 
+        public void Awake()
+        {
+            EntityManager.OnEntityAwake(this);
+        }
+
         public void Construct(LitePlayer owner, int entid = -1)
         {
             EntityIndex = EntityManager.RegisterEntity(this);
@@ -23,7 +28,7 @@ namespace LiteNetworking
             pkt.authority = owner.id;
             pkt.entityId = (int)EntityIndex;
             pkt.position = transform.position;
-            pkt.prefabId = GetComponent<NetworkIdentity>().networkIdentity;
+            pkt.prefabId = GetComponent<NetworkIdentity>().id;
 
             if(WorldAtlas.enabled)
             {

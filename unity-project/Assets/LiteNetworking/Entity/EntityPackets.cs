@@ -3,7 +3,7 @@ using LiteNetworking;
 using UnityEngine;
 public class SpawnEntityPacket : LitePacket {
     public int entityId;
-    public int prefabId;
+    public long prefabId;
     public int authority;
     public Vector3 position;
 

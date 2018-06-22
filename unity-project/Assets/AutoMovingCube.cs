@@ -5,10 +5,9 @@ using LiteNetworking;
 
 [RequireComponent(typeof(SyncTransform))]
 public class AutoMovingCube : LiteNetworking.NetworkedEntity {
-	// Use this for initialization
-	void Start () {
-		
-	}
+
+    [Networking.SyncOnRefresh]
+    public int randomNumber;
 	
 	// Update is called once per frame
 	void Update () {

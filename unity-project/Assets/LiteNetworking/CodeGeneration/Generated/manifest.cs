@@ -53,7 +53,7 @@ namespace LiteNetworkingGenerated
         {
             byte[] entityId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.entityId);
             m.Write(entityId, 0, entityId.Length);
-            byte[] prefabId = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.prefabId);
+            byte[] prefabId = Data_serializers_const.ser_M_liteLongSerializer.Serialize(pkt.prefabId);
             m.Write(prefabId, 0, prefabId.Length);
             byte[] authority = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.authority);
             m.Write(authority, 0, authority.Length);
@@ -64,7 +64,7 @@ namespace LiteNetworkingGenerated
         public void _Deserialize(SpawnEntityPacket pkt, MemoryStream m)
         {
             pkt.entityId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
-            pkt.prefabId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
+            pkt.prefabId = Data_serializers_const.ser_M_liteLongSerializer.Deserialize(m);
             pkt.authority = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             pkt.position = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
         }

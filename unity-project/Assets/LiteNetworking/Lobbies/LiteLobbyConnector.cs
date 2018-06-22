@@ -59,6 +59,7 @@ namespace LiteNetworking
         private static LobbyInfo currentLobby;
         public static int hostId, reliableChannelId, unreliableChannelId, connectedHost;
         public static bool isServer = false;
+        public static bool isConnected = false;
         private static bool isInitialized = false;
         public static int connectionId;
         private static int nextPlayerIndex = 1;
@@ -119,7 +120,7 @@ namespace LiteNetworking
             }
 
             MonoBehaviour.Instantiate(Resources.Load("Server Entity", typeof(GameObject)) as GameObject);
-
+            isConnected = true;
         }
 
         public static LitePlayer ConvertConnectionToPlayer(int connectionId)
@@ -171,7 +172,8 @@ namespace LiteNetworking
             //SpawnPlayerPrefab(true);
 
             // Spawn a prefab for the host!
-           // SpawnPlayerPrefab(false, 0);
+            // SpawnPlayerPrefab(false, 0);
+            isConnected = true;
         }
 
         public static void OnPlayerJoined(int connectionId)
@@ -206,7 +208,7 @@ namespace LiteNetworking
                 {
                     epkt.authority = e.GetComponent<NetworkAuthority>().owner.id;
                     epkt.entityId = (int) e.EntityIndex;
-                    epkt.prefabId = e.GetComponent<NetworkIdentity>().networkIdentity;
+                    epkt.prefabId = e.GetComponent<NetworkIdentity>().id;
                     epkt.position = e.transform.position;
                     PacketSender.SendSpawnEntityPacket(epkt, connectionId);
                 }
@@ -269,6 +271,7 @@ namespace LiteNetworking
         {
             byte error = 0;
             NetworkTransport.Disconnect(hostId, connectionId, out error);
+            isConnected = false;
         }
 
         public static void CreatePlayer(bool isLocalPlayer, int id, Vector3 position = new Vector3())
@@ -295,6 +298,7 @@ namespace LiteNetworking
 
             NetworkEvents.onDisconnect?.Invoke();
             connectionToPlayer.Clear();
+            isConnected = false;
         }
         
         // Sorry this function is a bit weird
@@ -353,7 +357,7 @@ namespace LiteNetworking
             }
             else
             {
-                Debug.Log("Success???");    
+                Debug.Log("Success???");
             }
         }   
 

@@ -6,7 +6,7 @@ namespace LiteNetworking
 {
     public class EntityManager 
     {
-        public static Dictionary<int, GameObject> registeredPrefabs = new Dictionary<int, GameObject>();
+        public static Dictionary<long, GameObject> registeredPrefabs = new Dictionary<long, GameObject>();
 
         public static Dictionary<int, NetworkedEntity> ents = new Dictionary<int, NetworkedEntity>();
         private static int nextNormalEnt = 4096;
@@ -57,12 +57,12 @@ namespace LiteNetworking
             }
         }
 
-        public static void RegisterPrefab(GameObject g, int identity)
+        public static void RegisterPrefab(GameObject g, long identity)
         {
             registeredPrefabs[identity] = g;
         }
 
-        public static NetworkedEntity RegenerateEntity(int id, int prefab, int authority, Vector3 pos)
+        public static NetworkedEntity RegenerateEntity(int id, long prefab, int authority, Vector3 pos)
         {
             if(registeredPrefabs.ContainsKey(prefab))
             {
@@ -77,6 +77,17 @@ namespace LiteNetworking
             {
                 Debug.LogError("Entity manager does not have prefab " + prefab);
             }
+            return null;
+        }
+
+        public static void OnEntityAwake(NetworkedEntity e)
+        {
+
+        }
+
+        public static NetworkedEntity SpawnEntity()
+        {
+
             return null;
         }
     }

@@ -8,6 +8,7 @@ using LiteNetworking;
 public class SocketSender : MonoBehaviour {
     public static void SendPacket(MemoryStream m, int connectionId = -1)
     {
+        if (!Networking.isConnected) return;
         byte error;
         if(LobbyConnector.isServer)
         {
@@ -32,6 +33,8 @@ public class SocketSender : MonoBehaviour {
 
     private static void SendToClient(MemoryStream m, int connectionId)
     {
+        if (!Networking.isConnected) return;
+
         byte error;
         NetworkTransport.Send(
                    LobbyConnector.hostId,

@@ -55,13 +55,25 @@ namespace LiteNetworking
     }
 
 
+
     public class Networking
     {
+        public class SyncOnRefresh : Attribute
+        {
+
+        }
         public static LitePlayer localPacketPlayer;
         private static Dictionary<System.Type, PacketStructDefinition> structDefinitions;
         public static Dictionary<System.Type, object> dataSerializers;
         public static LitePlayer localPlayer;
         public static Dictionary<int, LitePlayer> players = new Dictionary<int, LitePlayer>();
+        public static bool isConnected
+        {
+            get
+            {
+                return LobbyConnector.isConnected;
+            }
+        }
         public static bool isServer
         {
             get
