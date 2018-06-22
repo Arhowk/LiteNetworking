@@ -121,10 +121,13 @@ namespace LiteNetworking
 
             MonoBehaviour.Instantiate(Resources.Load("Server Entity", typeof(GameObject)) as GameObject);
             isConnected = true;
+            EntityManager.StartServer();
         }
 
         public static LitePlayer ConvertConnectionToPlayer(int connectionId)
         {
+            if (connectionId == -1) return null;
+
             if (connectionToPlayer.ContainsKey(connectionId))
             {
 
@@ -132,8 +135,8 @@ namespace LiteNetworking
             }
             else
             {
-                Debug.Log("The given connection id is null????");
-                return null;
+                if (Networking.players.Count == 0) return null;
+                return Networking.players[Networking.players.Keys.GetEnumerator().Current];
             }
         }
 
@@ -184,7 +187,7 @@ namespace LiteNetworking
 
         public static IEnumerator SendPacketsLater(int connectionId)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.1f);
             Debug.Log("OnPlayerJoined");
             //hostId = connectionId;
 
@@ -206,9 +209,10 @@ namespace LiteNetworking
             {
                 if(e.GetComponent<LitePlayer>() == null)
                 {
-                    epkt.authority = e.GetComponent<NetworkAuthority>().owner.id;
+                    epkt.authority = e.GetComponent<NetworkAuthority>()?.owner?.id ?? 0;
                     epkt.entityId = (int) e.EntityIndex;
                     epkt.prefabId = e.GetComponent<NetworkIdentity>().id;
+                    epkt.uniqueId = e.GetComponent<UniqueId>().uniqueId;
                     epkt.position = e.transform.position;
                     PacketSender.SendSpawnEntityPacket(epkt, connectionId);
                 }
@@ -220,6 +224,8 @@ namespace LiteNetworking
             SpawnPlayerPrefab(false, (nextPlayerIndex-1));
 
             Debug.Log("Actually sending the packet now");
+            introPkt.instanceIdToEntity = new int[0];
+            introPkt.preplacedInstanceIds = new long[0];
             LiteNetworkingGenerated.PacketSender.SendLobbyHostIntroductionPacket(introPkt, connectionId);
             Debug.Log("Done sending packet");
             // Send the player joined packet to all other clients

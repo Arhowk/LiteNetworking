@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefabId: 8012119286159096632
-  uniqueId: 1311449620943926214
+  uniqueId: 8444243891587402206
 --- !u!136 &136375526694104650
 CapsuleCollider:
   m_ObjectHideFlags: 1

@@ -26,6 +26,7 @@ public class NetworkManager : MonoBehaviour {
 
             foreach (GameObject g in temporaryEntityPrefabs)
             {
+                print("Object : " + g);
                 g.GetComponent<NetworkIdentity>().OnStartClient();
             }
         }

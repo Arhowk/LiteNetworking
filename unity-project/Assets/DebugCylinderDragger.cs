@@ -19,6 +19,7 @@ public class DebugCylinderDragger : NetworkedEntity {
 
     public void Update()
     {
-        transform.position = transform.position + dir * Time.deltaTime * 0.3f;
+        if(Networking.isServer)
+             transform.position = transform.position + dir * Time.deltaTime * 0.3f;
     }
 }

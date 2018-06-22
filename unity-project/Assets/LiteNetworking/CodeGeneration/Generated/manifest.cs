@@ -55,6 +55,8 @@ namespace LiteNetworkingGenerated
             m.Write(entityId, 0, entityId.Length);
             byte[] prefabId = Data_serializers_const.ser_M_liteLongSerializer.Serialize(pkt.prefabId);
             m.Write(prefabId, 0, prefabId.Length);
+            byte[] uniqueId = Data_serializers_const.ser_M_liteLongSerializer.Serialize(pkt.uniqueId);
+            m.Write(uniqueId, 0, uniqueId.Length);
             byte[] authority = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.authority);
             m.Write(authority, 0, authority.Length);
             byte[] position = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.position);
@@ -65,6 +67,7 @@ namespace LiteNetworkingGenerated
         {
             pkt.entityId = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             pkt.prefabId = Data_serializers_const.ser_M_liteLongSerializer.Deserialize(m);
+            pkt.uniqueId = Data_serializers_const.ser_M_liteLongSerializer.Deserialize(m);
             pkt.authority = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             pkt.position = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
         }
@@ -94,6 +97,42 @@ namespace LiteNetworkingGenerated
         {
             this._Deserialize(ConstRefs.pkt_RemoveEntity, m);
             ConstRefs.pkt_RemoveEntity.Execute();
+        }
+    }
+
+    public sealed class pkt_RegisterPreplacedEntity_autogen : LiteNetworking.M_LitePacketInternalMirror
+    {
+
+        public void _Serialize(RegisterPreplacedEntity pkt, MemoryStream m)
+        {
+        }
+
+        public void _Deserialize(RegisterPreplacedEntity pkt, MemoryStream m)
+        {
+        }
+
+        public override void Fire(MemoryStream m)
+        {
+            this._Deserialize(ConstRefs.pkt_RegisterPreplacedEntity, m);
+            ConstRefs.pkt_RegisterPreplacedEntity.Execute();
+        }
+    }
+
+    public sealed class pkt_UpdatePreplacedEntity_autogen : LiteNetworking.M_LitePacketInternalMirror
+    {
+
+        public void _Serialize(UpdatePreplacedEntity pkt, MemoryStream m)
+        {
+        }
+
+        public void _Deserialize(UpdatePreplacedEntity pkt, MemoryStream m)
+        {
+        }
+
+        public override void Fire(MemoryStream m)
+        {
+            this._Deserialize(ConstRefs.pkt_UpdatePreplacedEntity, m);
+            ConstRefs.pkt_UpdatePreplacedEntity.Execute();
         }
     }
 
@@ -232,6 +271,20 @@ namespace LiteNetworkingGenerated
                 byte[] byteArr = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.activePlayerIds[i_activePlayerIds]);
                 m.Write(byteArr, 0, byteArr.Length);
             }
+            m.WriteByte(((byte)(pkt.preplacedInstanceIds.Length)));
+            int i_preplacedInstanceIds = 0;
+            for (i_preplacedInstanceIds = 0; (i_preplacedInstanceIds < pkt.preplacedInstanceIds.Length); i_preplacedInstanceIds = (i_preplacedInstanceIds + 1))
+            {
+                byte[] byteArr = Data_serializers_const.ser_M_liteLongSerializer.Serialize(pkt.preplacedInstanceIds[i_preplacedInstanceIds]);
+                m.Write(byteArr, 0, byteArr.Length);
+            }
+            m.WriteByte(((byte)(pkt.instanceIdToEntity.Length)));
+            int i_instanceIdToEntity = 0;
+            for (i_instanceIdToEntity = 0; (i_instanceIdToEntity < pkt.instanceIdToEntity.Length); i_instanceIdToEntity = (i_instanceIdToEntity + 1))
+            {
+                byte[] byteArr = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.instanceIdToEntity[i_instanceIdToEntity]);
+                m.Write(byteArr, 0, byteArr.Length);
+            }
         }
 
         public void _Deserialize(LobbyHostIntroductionPacket pkt, MemoryStream m)
@@ -243,6 +296,20 @@ namespace LiteNetworkingGenerated
             for (i_activePlayerIds = 0; (i_activePlayerIds < length_activePlayerIds); i_activePlayerIds = (i_activePlayerIds + 1))
             {
                 pkt.activePlayerIds[i_activePlayerIds] = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
+            }
+            int length_preplacedInstanceIds = m.ReadByte();
+            pkt.preplacedInstanceIds = new Int64[length_preplacedInstanceIds];
+            int i_preplacedInstanceIds = 0;
+            for (i_preplacedInstanceIds = 0; (i_preplacedInstanceIds < length_preplacedInstanceIds); i_preplacedInstanceIds = (i_preplacedInstanceIds + 1))
+            {
+                pkt.preplacedInstanceIds[i_preplacedInstanceIds] = Data_serializers_const.ser_M_liteLongSerializer.Deserialize(m);
+            }
+            int length_instanceIdToEntity = m.ReadByte();
+            pkt.instanceIdToEntity = new Int32[length_instanceIdToEntity];
+            int i_instanceIdToEntity = 0;
+            for (i_instanceIdToEntity = 0; (i_instanceIdToEntity < length_instanceIdToEntity); i_instanceIdToEntity = (i_instanceIdToEntity + 1))
+            {
+                pkt.instanceIdToEntity[i_instanceIdToEntity] = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
             }
         }
 
@@ -339,6 +406,14 @@ namespace LiteNetworkingGenerated
 
         public static pkt_RemoveEntity_autogen mirror_RemoveEntity = new pkt_RemoveEntity_autogen();
 
+        public static RegisterPreplacedEntity pkt_RegisterPreplacedEntity = new RegisterPreplacedEntity();
+
+        public static pkt_RegisterPreplacedEntity_autogen mirror_RegisterPreplacedEntity = new pkt_RegisterPreplacedEntity_autogen();
+
+        public static UpdatePreplacedEntity pkt_UpdatePreplacedEntity = new UpdatePreplacedEntity();
+
+        public static pkt_UpdatePreplacedEntity_autogen mirror_UpdatePreplacedEntity = new pkt_UpdatePreplacedEntity_autogen();
+
         public static SyncTransformPacket pkt_SyncTransformPacket = new SyncTransformPacket();
 
         public static pkt_SyncTransformPacket_autogen mirror_SyncTransformPacket = new pkt_SyncTransformPacket_autogen();
@@ -393,10 +468,28 @@ namespace LiteNetworkingGenerated
             Networking.TransmitPacket(m, connectionId);
         }
 
-        public static void SendSyncTransformPacket(SyncTransformPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
+        public static void SendRegisterPreplacedEntity(RegisterPreplacedEntity pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
             m.WriteByte(2);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
+            ConstRefs.mirror_RegisterPreplacedEntity._Serialize(pkt, m);
+            Networking.TransmitPacket(m, connectionId);
+        }
+
+        public static void SendUpdatePreplacedEntity(UpdatePreplacedEntity pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
+        {
+            MemoryStream m = new MemoryStream();
+            m.WriteByte(3);
+            LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
+            ConstRefs.mirror_UpdatePreplacedEntity._Serialize(pkt, m);
+            Networking.TransmitPacket(m, connectionId);
+        }
+
+        public static void SendSyncTransformPacket(SyncTransformPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
+        {
+            MemoryStream m = new MemoryStream();
+            m.WriteByte(4);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_SyncTransformPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -405,7 +498,7 @@ namespace LiteNetworkingGenerated
         public static void SendRequestChunkPacket(RequestChunkPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(3);
+            m.WriteByte(5);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_RequestChunkPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -414,7 +507,7 @@ namespace LiteNetworkingGenerated
         public static void SendOnSceneChangedPacket(OnSceneChangedPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(4);
+            m.WriteByte(6);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_OnSceneChangedPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -423,7 +516,7 @@ namespace LiteNetworkingGenerated
         public static void SendOnSceneChangedClient(OnSceneChangedClient pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(5);
+            m.WriteByte(7);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_OnSceneChangedClient._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -432,7 +525,7 @@ namespace LiteNetworkingGenerated
         public static void SendLobbyHostIntroductionPacket(LobbyHostIntroductionPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(6);
+            m.WriteByte(8);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_LobbyHostIntroductionPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -441,7 +534,7 @@ namespace LiteNetworkingGenerated
         public static void SendLobbyNewPlayerPacket(LobbyNewPlayerPacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(7);
+            m.WriteByte(9);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_LobbyNewPlayerPacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -450,7 +543,7 @@ namespace LiteNetworkingGenerated
         public static void SendLobbyGoodbyePacket(LobbyGoodbyePacket pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(8);
+            m.WriteByte(10);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_LobbyGoodbyePacket._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -459,7 +552,7 @@ namespace LiteNetworkingGenerated
         public static void SendThirdPersonPeriodicUpdate(ThirdPersonPeriodicUpdate pkt, [Optional()] [DefaultParameterValue(-1)] int connectionId)
         {
             MemoryStream m = new MemoryStream();
-            m.WriteByte(9);
+            m.WriteByte(11);
             LiteNetworking.Networking.localPacketPlayer = LiteNetworking.LobbyConnector.ConvertConnectionToPlayer(connectionId);
             ConstRefs.mirror_ThirdPersonPeriodicUpdate._Serialize(pkt, m);
             Networking.TransmitPacket(m, connectionId);
@@ -475,6 +568,8 @@ namespace LiteNetworkingGenerated
         {
             mirrors.Add(ConstRefs.mirror_SpawnEntityPacket);
             mirrors.Add(ConstRefs.mirror_RemoveEntity);
+            mirrors.Add(ConstRefs.mirror_RegisterPreplacedEntity);
+            mirrors.Add(ConstRefs.mirror_UpdatePreplacedEntity);
             mirrors.Add(ConstRefs.mirror_SyncTransformPacket);
             mirrors.Add(ConstRefs.mirror_RequestChunkPacket);
             mirrors.Add(ConstRefs.mirror_OnSceneChangedPacket);

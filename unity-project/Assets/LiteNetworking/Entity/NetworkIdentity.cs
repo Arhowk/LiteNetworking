@@ -13,6 +13,8 @@ public class NetworkIdentity : MonoBehaviour {
     {
         get
         {
+            if (_id == null) _id = GetComponent<UniqueId>();
+                
             return _id.uniqueId;
         }
     }

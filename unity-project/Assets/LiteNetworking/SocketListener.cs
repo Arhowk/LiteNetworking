@@ -36,6 +36,7 @@ public class SocketListener
                         else
                         {
                             // another user connected
+                            Debug.Log("On Player Joined");
                             LobbyConnector.OnPlayerJoined(connectionId);
                         }
                         break;
