@@ -80,6 +80,8 @@ namespace LiteNetworking
                     e.SetEntityIndex(id);
                     e.GetComponent<NetworkAuthority>()?.SetAuthority(authority);
 
+                    registeredPreplacedEnts.Remove(uniqueId);
+
                     return e;
                 }
             }
@@ -102,7 +104,10 @@ namespace LiteNetworking
 
         public static void OnEntityAwake(NetworkedEntity e)
         {
-            registeredPreplacedEnts[e.GetComponent<UniqueId>().uniqueId] = e;
+            if(!Networking.isConnected)
+            {
+                registeredPreplacedEnts[e.GetComponent<UniqueId>().uniqueId] = e;
+            }
             //ents[nextTempIndex--] = e;
         }
 

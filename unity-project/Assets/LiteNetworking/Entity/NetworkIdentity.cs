@@ -21,12 +21,15 @@ public class NetworkIdentity : MonoBehaviour {
     
 
     // Use this for initialization
-    void Awake () {
+    void Awake ()
+    {
         _id = GetComponent<UniqueId>();
-	}
+    }
 
     public void OnStartClient()
     {
-        EntityManager.RegisterPrefab(connectedPrefab, id);
+        _id = GetComponent<UniqueId>();
+        Debug.Log("RegisterPrefab " + _id.prefabId);
+        EntityManager.RegisterPrefab(connectedPrefab, _id.prefabId);
     }
 }

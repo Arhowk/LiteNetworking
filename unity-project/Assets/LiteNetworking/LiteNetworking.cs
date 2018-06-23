@@ -89,7 +89,10 @@ namespace LiteNetworking
 
         public static LitePlayer GetPlayer(int id)
         {
-            return players[id];
+            LitePlayer p;
+            bool b = players.TryGetValue(id, out p);
+            if (b) return p;
+            else return null;
         }
 
         public static void TransmitPacket(MemoryStream m, int connectionId)

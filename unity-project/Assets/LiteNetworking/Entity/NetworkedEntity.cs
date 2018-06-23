@@ -28,7 +28,7 @@ namespace LiteNetworking
             pkt.authority = owner.id;
             pkt.entityId = (int)EntityIndex;
             pkt.position = transform.position;
-            pkt.prefabId = GetComponent<NetworkIdentity>().id;
+            pkt.prefabId = GetComponent<UniqueId>().prefabId;
 
             if(WorldAtlas.enabled)
             {

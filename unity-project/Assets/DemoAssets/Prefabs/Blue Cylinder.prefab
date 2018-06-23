@@ -110,7 +110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f05f0ad2fe828d648874e1d24d1db9ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectedPrefab: {fileID: 0}
+  connectedPrefab: {fileID: 1592738799609836}
 --- !u!114 &114696304511332682
 MonoBehaviour:
   m_ObjectHideFlags: 1

@@ -211,7 +211,7 @@ namespace LiteNetworking
                 {
                     epkt.authority = e.GetComponent<NetworkAuthority>()?.owner?.id ?? 0;
                     epkt.entityId = (int) e.EntityIndex;
-                    epkt.prefabId = e.GetComponent<NetworkIdentity>().id;
+                    epkt.prefabId = e.GetComponent<UniqueId>().prefabId;
                     epkt.uniqueId = e.GetComponent<UniqueId>().uniqueId;
                     epkt.position = e.transform.position;
                     PacketSender.SendSpawnEntityPacket(epkt, connectionId);
