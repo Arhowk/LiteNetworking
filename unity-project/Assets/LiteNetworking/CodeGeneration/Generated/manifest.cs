@@ -371,7 +371,7 @@ namespace LiteNetworkingGenerated
             m.Write(thisEntity, 0, thisEntity.Length);
             byte[] m_Move = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.m_Move);
             m.Write(m_Move, 0, m_Move.Length);
-            byte[] position = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.position);
+            byte[] position = Data_serializers_const.ser_ChunkedVectorSerializer.Serialize(pkt.position);
             m.Write(position, 0, position.Length);
             byte[] crouch = Data_serializers_const.ser_M_liteBoolSerializer.Serialize(pkt.crouch);
             m.Write(crouch, 0, crouch.Length);
@@ -383,7 +383,7 @@ namespace LiteNetworkingGenerated
         {
             pkt.thisEntity = Data_serializers_const.ser_M_liteEntitySerializer.Deserialize(m);
             pkt.m_Move = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
-            pkt.position = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
+            pkt.position = Data_serializers_const.ser_ChunkedVectorSerializer.Deserialize(m);
             pkt.crouch = Data_serializers_const.ser_M_liteBoolSerializer.Deserialize(m);
             pkt.m_Jump = Data_serializers_const.ser_M_liteBoolSerializer.Deserialize(m);
         }
@@ -587,4 +587,3 @@ namespace LiteNetworkingGenerated
         }
     }
 }
-        

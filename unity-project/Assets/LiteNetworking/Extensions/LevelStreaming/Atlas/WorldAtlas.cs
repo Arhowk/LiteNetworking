@@ -193,6 +193,7 @@ public class WorldAtlas : MonoBehaviour {
             PrepareSceneForPlayer(player, sceneId, fromLink, chk =>
             {
                 ChunkReady(chk, player);
+
             });
         }
         else
@@ -203,6 +204,13 @@ public class WorldAtlas : MonoBehaviour {
 
     private void ChunkReady(WorldChunk chunk, LitePlayer player)
     {
+
+        // Move the player ent
+        Vector3 oldOffset = ChunkHandler.i.GetChunkOffset(player.GetChunkId());
+        Vector3 newOffset = ChunkHandler.i.GetChunkOffset(chunk.chunk);
+        Debug.LogWarning("Old : " + oldOffset);
+        Debug.LogWarning("New : " + newOffset);
+        player.transform.position += (newOffset - oldOffset);   
 
         // Send data about all the players and the connected entitits.
         OnSceneChangedClient clientUpdate = new OnSceneChangedClient();
@@ -235,6 +243,7 @@ public class WorldAtlas : MonoBehaviour {
 
         // ADd this player to the connected entities
         chunk.connectedPlayers.Add(player);
+
     }
 
 }

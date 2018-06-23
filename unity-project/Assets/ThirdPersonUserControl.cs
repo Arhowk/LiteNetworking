@@ -8,19 +8,20 @@ public class ThirdPersonPeriodicUpdate : LitePacket
 {
     public NetworkedEntity thisEntity;
     public Vector3 m_Move;
+    [LevelStreaming.Position]
     public Vector3 position;
     public bool crouch;
     public bool m_Jump;
 
     public override void Execute()
     {
-        (thisEntity as ThirdPersonUserControl).ExternalUpdate(m_Move, crouch, m_Jump, position);
+        (thisEntity as LitePlayer).GetComponent<ThirdPersonUserControl>().ExternalUpdate(m_Move, crouch, m_Jump, position);
     }
 }
 
 
 [RequireComponent(typeof(ThirdPersonCharacter))]
-public class ThirdPersonUserControl : LiteNetworking.NetworkedEntity
+public class ThirdPersonUserControl : MonoBehaviour
 {
     private ThirdPersonCharacter m_Character; // A reference to the ThirdPersonCharacter on the object
     private Transform m_Cam;                  // A reference to the main camera in the scenes transform
@@ -90,7 +91,7 @@ public class ThirdPersonUserControl : LiteNetworking.NetworkedEntity
             ThirdPersonPeriodicUpdate update = new ThirdPersonPeriodicUpdate();
             update.m_Jump = m_Jump;
             update.m_Move = m_Move;
-            update.thisEntity = this;
+            update.thisEntity = GetComponent<NetworkedEntity>();
             update.position = transform.position;
             update.crouch = crouch;
             LiteNetworkingGenerated.PacketSender.SendThirdPersonPeriodicUpdate(update);
