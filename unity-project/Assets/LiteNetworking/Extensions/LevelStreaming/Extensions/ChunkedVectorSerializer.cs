@@ -15,7 +15,6 @@ public class ChunkedVectorSerializer : LiteByteSerializer<Vector3>
         {
             int playerChunk = LiteNetworking.Networking.localPacketPlayer?.GetChunkId() ?? 0;
             Vector3 offset = ChunkHandler.i.GetChunkOffset(playerChunk);
-            Debug.Log("DS Player offset is " + offset);
             return defaultSerializer.Deserialize(b) + offset;
         }
         else
@@ -31,7 +30,6 @@ public class ChunkedVectorSerializer : LiteByteSerializer<Vector3>
         {
             int playerChunk = LiteNetworking.Networking.localPacketPlayer?.GetChunkId() ?? 0;
             Vector3 offset = ChunkHandler.i.GetChunkOffset(playerChunk);
-            Debug.Log("S Player offset is " + offset);
             return defaultSerializer.Serialize(t - offset);
         }
         else

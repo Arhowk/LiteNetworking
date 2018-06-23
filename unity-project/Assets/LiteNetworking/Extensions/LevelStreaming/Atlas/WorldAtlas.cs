@@ -208,8 +208,6 @@ public class WorldAtlas : MonoBehaviour {
         // Move the player ent
         Vector3 oldOffset = ChunkHandler.i.GetChunkOffset(player.GetChunkId());
         Vector3 newOffset = ChunkHandler.i.GetChunkOffset(chunk.chunk);
-        Debug.LogWarning("Old : " + oldOffset);
-        Debug.LogWarning("New : " + newOffset);
         player.transform.position += (newOffset - oldOffset);   
 
         // Send data about all the players and the connected entitits.
