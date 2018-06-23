@@ -136,6 +136,13 @@ namespace LiteNetworking
             else
             {
                 if (Networking.players.Count == 0) return null;
+
+                Debug.LogWarning("This Connection ID is " + connectionId);
+                foreach(KeyValuePair<int, int> kv in connectionToPlayer)
+                {
+                    Debug.LogWarning(kv.Key + " : " + kv.Value);
+                }
+                Debug.LogWarning("End");
                 return Networking.players[Networking.players.Keys.GetEnumerator().Current];
             }
         }
@@ -203,6 +210,7 @@ namespace LiteNetworking
                     activePlayers.Add(connectionToPlayer[i]);
             }
             introPkt.activePlayerIds = activePlayers.ToArray();
+            connectionToPlayer[connectionId] = nextPlayerIndex - 1;
 
             SpawnEntityPacket epkt = new SpawnEntityPacket();
             foreach (NetworkedEntity e in EntityManager.ents.Values)
@@ -218,7 +226,6 @@ namespace LiteNetworking
                 }
             }
 
-            connectionToPlayer[connectionId] = nextPlayerIndex-1;
 
             Debug.Log("Spawining player prefab");
             SpawnPlayerPrefab(false, (nextPlayerIndex-1));

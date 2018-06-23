@@ -971,6 +971,8 @@ GameObject:
   - component: {fileID: 136589963439620972}
   - component: {fileID: 114746635989746572}
   - component: {fileID: 114473594304652548}
+  - component: {fileID: 114464758627464288}
+  - component: {fileID: 114062908244416302}
   m_Layer: 0
   m_Name: ThirdPersonController
   m_TagString: Untagged
@@ -2486,6 +2488,31 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &114062908244416302
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1766923731802614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f05f0ad2fe828d648874e1d24d1db9ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectedPrefab: {fileID: 1766923731802614}
+--- !u!114 &114464758627464288
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1766923731802614}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e78116a070fef8f4ea9d6d648f1e46a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefabId: 6871506164359409209
+  uniqueId: 2772547776155132855
 --- !u!114 &114473594304652548
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2497,7 +2524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e3f6a1ba8e8cc9429492c690531d1cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  connectedPrefab: {fileID: 0}
+  EntityIndex: 0
 --- !u!114 &114746635989746572
 MonoBehaviour:
   m_ObjectHideFlags: 1
