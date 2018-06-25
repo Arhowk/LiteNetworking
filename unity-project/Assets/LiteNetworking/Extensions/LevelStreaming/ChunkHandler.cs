@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using LiteNetworking;
+using LiteNetworkingGenerated;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +23,24 @@ public class OnSceneChangedPacket : LiteNetworking.LitePacket
 
     public override void Execute()
     {
-        WorldAtlas.current.MovePlayerToScene(GetExecutingClient(), sceneId, null);
+        WorldAtlas.current.MovePlayerToScene(GetExecutingClient(), sceneId, null, chk =>
+        {
+            SpawnEntityPacket epkt = new SpawnEntityPacket();
+            foreach (NetworkedEntity e in EntityManager.ents.Values)
+            {
+                if (e.GetComponent<LitePlayer>() == null && e.GetChunkId() == chk.chunk)
+                {
+                    epkt.authority = e.GetComponent<NetworkAuthority>()?.owner?.id ?? 0;
+                    epkt.entityId = (int)e.EntityIndex;
+                    epkt.prefabId = e.GetComponent<UniqueId>().prefabId;
+                    epkt.uniqueId = e.GetComponent<UniqueId>().uniqueId;
+                    epkt.position = e.transform.position;
+                    PacketSender.SendSpawnEntityPacket(epkt, GetExecutingClient().GetConnectionId());
+                }
+            }
+        });
+
+
     }
 }
 

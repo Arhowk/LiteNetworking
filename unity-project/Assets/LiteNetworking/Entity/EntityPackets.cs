@@ -6,6 +6,8 @@ public class SpawnEntityPacket : LitePacket {
     public long prefabId;
     public long uniqueId;
     public int authority;
+
+    [LevelStreaming.Position]
     public Vector3 position;
 
     public override void Execute()

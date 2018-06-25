@@ -59,7 +59,7 @@ namespace LiteNetworkingGenerated
             m.Write(uniqueId, 0, uniqueId.Length);
             byte[] authority = Data_serializers_const.ser_M_liteIntSerializer.Serialize(pkt.authority);
             m.Write(authority, 0, authority.Length);
-            byte[] position = Data_serializers_const.ser_M_liteVector3Serializer.Serialize(pkt.position);
+            byte[] position = Data_serializers_const.ser_ChunkedVectorSerializer.Serialize(pkt.position);
             m.Write(position, 0, position.Length);
         }
         
@@ -69,7 +69,7 @@ namespace LiteNetworkingGenerated
             pkt.prefabId = Data_serializers_const.ser_M_liteLongSerializer.Deserialize(m);
             pkt.uniqueId = Data_serializers_const.ser_M_liteLongSerializer.Deserialize(m);
             pkt.authority = Data_serializers_const.ser_M_liteIntSerializer.Deserialize(m);
-            pkt.position = Data_serializers_const.ser_M_liteVector3Serializer.Deserialize(m);
+            pkt.position = Data_serializers_const.ser_ChunkedVectorSerializer.Deserialize(m);
         }
         
         public override void Fire(MemoryStream m)

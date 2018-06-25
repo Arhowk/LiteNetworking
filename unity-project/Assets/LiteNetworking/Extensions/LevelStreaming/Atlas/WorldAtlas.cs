@@ -161,7 +161,7 @@ public class WorldAtlas : MonoBehaviour {
         }
     }
 
-    public void MovePlayerToScene(LitePlayer player, int sceneId, WorldLink fromLink)
+    public void MovePlayerToScene(LitePlayer player, int sceneId, WorldLink fromLink, System.Action<WorldChunk> callback = null)
     {
         if (!Networking.isServer)
         {
@@ -193,12 +193,13 @@ public class WorldAtlas : MonoBehaviour {
             PrepareSceneForPlayer(player, sceneId, fromLink, chk =>
             {
                 ChunkReady(chk, player);
-
+                callback?.Invoke(chk);
             });
         }
         else
         {
             ChunkReady(chunk, player);
+            callback?.Invoke(chunk);
         }
     }
 

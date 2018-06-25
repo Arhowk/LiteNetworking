@@ -68,10 +68,13 @@ namespace LiteNetworking
         public static NetworkedEntity RegenerateEntity(int id, long prefab, int authority, Vector3 pos, long uniqueId = 0)
         {
             // TODO: Separate preplaced entities from dynamically created ents
+            Debug.Log("Has regen");
             if(uniqueId != 0)
             {
-                if(registeredPreplacedEnts.ContainsKey(uniqueId))
+                Debug.Log("Has UniqueId " + uniqueId);
+                if (registeredPreplacedEnts.ContainsKey(uniqueId))
                 {
+                    Debug.Log("Has PreplacedEnt");
                     NetworkedEntity e = registeredPreplacedEnts[uniqueId];
 
                     e.SetEntityIndex(id);
@@ -101,10 +104,10 @@ namespace LiteNetworking
 
         public static void OnEntityAwake(NetworkedEntity e)
         {
-            if(!Networking.isConnected)
-            {
+            //if(!Networking.isConnected)
+            //{
                 registeredPreplacedEnts[e.GetComponent<UniqueId>().uniqueId] = e;
-            }
+            //}
             //ents[nextTempIndex--] = e;
         }
 
